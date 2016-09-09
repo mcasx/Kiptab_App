@@ -7,9 +7,7 @@
 
         // app initial state
         data: {
-            isFirstTime: true,
-
-            user: storage.fetch('user'),
+            settings: storage.fetch('settings'),
             groups: storage.fetch('groups'),
             users: storage.fetch('users'),
             trips: storage.fetch('trips'),
@@ -24,10 +22,11 @@
 
         // watch expenses change for localStorage persistence
         watch: {
-            user: {
+
+            settings: {
                 deep: true,
                 handler: function(val) {
-                    storage.save('expenses', val)
+                    storage.save('settings', val)
                 }
             },
 
@@ -60,7 +59,7 @@
              ******************************************************************/
 
             invitePerson: function(person) {
-                this.people.push({
+                this.groups[this.groups.indexOf(this.settings.currentGroup)].users.push({
                     email: person.email,
                     name: person.name
                 });
@@ -69,24 +68,7 @@
             },
 
             removePerson: function (person) {
-                this.people.$remove(person);
-            },
-
-            editPerson: function (person) {
-                this.cache = { email: person.email, name: person.name };
-                this.tmpPerson = person;
-            },
-
-            doneEditPerson: function (person) {
-                this.resetState();
-
-                // TODO: handle empty name
-            },
-
-            cancelEditPerson: function (person) {
-                person.email = this.cache.email;
-                person.name = this.cache.name;
-                this.resetState();
+                this.groups[this.groups.indexOf(this.settings.currentGroup)].users.$remove(person);
             },
 
             /*******************************************************************
@@ -95,42 +77,34 @@
 
             addExpense: function (expense) {
                 this.expenses.push({
+                    debtors: expense.debtors;
+                    creditor: this.settings.currentUser,
                     value: expense.value || 0.00,
-                    description: expense.description.trim() || ' ',
-                    numIndebted: this.tmpIndebted.length
+                    description: expense.description.trim() || ' '
                 });
-
-                for(var i = 0; i < this.people.length; i++){
-                    this.debts[i].push(this.tmpIndebted.includes(i));
-                }
 
                 this.resetState();
             },
 
             removeExpense: function (expense) {
-                this.debts = helpers.deleteArrayColumn(this.debts, this.expenses.indexOf(expense));
-                this.expenses.$remove(expense);
+                this.groups[this.groups.indexOf(this.settings.currentGroup)].expenses.$remove(expense);
             },
 
             editExpense: function (expense) {
-                this.cache = { value: expense.value, description: expense.description, tmpIndebted: this.tmpIndebted };
+                this.cache = { debtors: expense.debtors, creditor: expense.creditor, value: expense.value, description: expense.description};
                 this.tmpExpense = expense;
             },
 
             doneEditExpense: function (expense) {
-                for(var i = 0; i < this.people.length; i++) {
-                    this.debts[i][this.expenses.indexOf(expense)] = this.tmpIndebted.includes(i);
-                }
-
-                this.tmpExpense.numIndebted = this.tmpIndebted.length;
-
                 this.resetState();
             },
 
             cancelEditExpense: function (expense) {
+                expense.debtors = this.cache.debtors;
+                expense.creditor = this.cache.creditor;
                 expense.value = this.cache.value;
                 expense.description = this.cache.description;
-                this.tmpIndebted = this.cache.tmpIndebted;
+
                 this.resetState();
             },
         }
