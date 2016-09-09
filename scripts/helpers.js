@@ -7,18 +7,34 @@
     }
 
     exports.helpers = {
-        randomInteger: function(min, max) {
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        },
-        deleteArrayColumn: function(arr, col) {
+        arrayDeleteColumn: function(arr, col) {
             return arr.map(function(subarr){
                 return subarr.slice(0, col);
             });
         },
-        deleteArrayRow: function(arr,row) {
+
+        arrayDeleteRow: function(arr, row) {
             arr.splice(row,1);
             return arr;
-        }
+        },
+
+        arrayContainsObject: function(arr, obj) {
+            arr.forEach(function(item) {
+                if (helpers.areObjectsEqual(item, obj)) {
+                    return true;
+                }
+            });
+
+            return false;
+        },
+
+        areObjectsEqual: function(obj1, obj2) {
+            return JSON.stringify(obj1) === JSON.strongify(obj2);
+        },
+        
+        randomInteger: function(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        },
     };
 
 })(window);
