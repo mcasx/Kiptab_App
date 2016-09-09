@@ -37,16 +37,17 @@
                                 <span class="mdl-list__item-primary-content">
                                     <i class="material-icons mdl-list__item-avatar">person</i>
                                     <span>{{ person.name }}</span>
+                                    <span class="mdl-list__item-text-body">{{ person.email }}</span>
                                 </span>
 
                                 <span>
-                                    <a @click="editPerson(person)" class="people-edit-button" class="mdl-list__item-secondary-action"><i class="material-icons">edit</i></a>
+                                    <a onclick="dom.registerDialog('#people-edit-dialog')" @click="editPerson(person)" class="people-edit-button" class="mdl-list__item-secondary-action"><i class="material-icons">edit</i></a>
                                     <a @click="removePerson(person)" class="mdl-list__item-secondary-action"><i class="material-icons">delete</i></a>
                                 </span>
                             </li>
                         </ul>
 
-                        <button id="people-add-button" class="mdl-button mdl-js-button mdl-button--fab mdl-button--bottom-right mdl-js-ripple-effect mdl-button--colored">
+                        <button onclick="dom.registerDialog('#people-add-dialog')" id="people-add-button" class="mdl-button mdl-js-button mdl-button--fab mdl-button--bottom-right mdl-js-ripple-effect mdl-button--colored">
                             <i class="material-icons">person_add</i>
                         </button>
 
@@ -61,5 +62,7 @@
     <script src="scripts/material.min.js"></script>
     <script src="scripts/vue.js"></script>
     <script src="scripts/storage.js"></script>
+    <script src="scripts/api.js"></script>
     <script src="scripts/app.js"></script>
+    <script src="scripts/dom.js"></script>
 </html>

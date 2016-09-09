@@ -5,8 +5,12 @@
         el: 'body',
 
         data: {
-            people: storage.fetch('people'),
-            tmpPerson: { name: ''},
+            people: api.get('/').groups[0].users,
+            groups: api.get('/'),
+            expenses: api.get('/').groups[0].expenses,
+
+            tmpPerson: { email: '', name: ''},
+            tmpExpenses: { debtors: [], creditor: { email: '', name: ''}, value: 0, description: ''},
 
             cache: {},
         },
@@ -22,7 +26,8 @@
 
         methods: {
             resetState: function() {
-                this.tmpPerson = { name: '' };
+                this.tmpPerson = { email: '', name: '' };
+                this.tmpExpenses = { debtors: [], creditor: { email: '', name: ''}, value: 0, description: ''};
                 this.cache = {};
             },
 
@@ -32,14 +37,15 @@
 
             addPerson: function(person) {
                 this.people.push({
+                    email: person.email,
                     name: person.name
                 });
 
                 this.resetState();
             },
-            
+
             editPerson: function(person) {
-                this.cache = { name: person.name };
+                this.cache = { email: person.email, name: person.name};
                 this.tmpPerson = person;
             },
 
@@ -50,9 +56,10 @@
             },
 
             cancelEditPerson: function(person) {
+                person.email = this.cache.email;
                 person.name = this.cache.name;
                 this.resetState();
-            }
+            },
 
             removePerson: function (person) {
                 this.people.$remove(person);
