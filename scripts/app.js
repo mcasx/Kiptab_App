@@ -6,8 +6,9 @@
         el: 'body',
 
         data: {
-            users: {},
-            expenses: {},
+            myself: {},
+            users: [],
+            expenses: [],
 
             tmpUser: { email: '', name: '' },
             tmpExpenses: { debtors: [], creditor: { email: '', name: ''}, value: 0, description: '' },
@@ -61,7 +62,50 @@
 
             removeUser: function (user) {
                 this.users.$remove(user);
-            }
+            },
+
+            /*******************************************************************
+             * Expenses
+             ******************************************************************/
+
+
+            addExpense: function (expense) {
+                this.expenses.push({
+                    debtors: expense.debtors,
+                    creditor: this.myself,
+                    value: expense.value || 0.00,
+                    description: expense.description.trim() || ' '
+                });
+
+                this.resetState();
+            },
+
+            removeExpense: function (expense) {
+                this.expenses.$remove(expense);
+            },
+
+            editExpense: function (expense) {
+                this.cache = {
+                    debtors: expense.debtors,
+                    creditor: this.myself,
+                    value: expense.value,
+                    description: expense.description
+                };
+
+                this.tmpExpense = expense;
+            },
+
+            doneEditExpense: function (expense) {
+                this.resetState();
+            },
+
+            cancelEditExpense: function (expense) {
+                expense.debtors = this.cache.debtors;
+                expense.value = this.cache.value;
+                expense.description = this.cache.description;
+
+                this.resetState();
+            },
         }
     });
 
