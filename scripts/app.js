@@ -23,6 +23,7 @@
         methods: {
             resetState: function() {
                 this.tmpPerson = { name: '' };
+                this.cache = {};
             },
 
             /*******************************************************************
@@ -36,6 +37,22 @@
 
                 this.resetState();
             },
+            
+            editPerson: function(person) {
+                this.cache = { name: person.name };
+                this.tmpPerson = person;
+            },
+
+            doneEditPerson: function(person) {
+                this.resetState();
+
+                //TODO: Handle empty name
+            },
+
+            cancelEditPerson: function(person) {
+                person.name = this.cache.name;
+                this.resetState();
+            }
 
             removePerson: function (person) {
                 this.people.$remove(person);
