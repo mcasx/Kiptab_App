@@ -7,9 +7,11 @@
 
         <link rel="stylesheet" href="http://fonts.googleapis.com/icon?family=Material+Icons">
         <link rel="stylesheet" href="styles/material.min.css">
-        <link rel="stylesheet" href="styles/app.css">
-    </head>
+        <link rel="stylesheet" href="styles/main.css">
 
+        <link rel="stylesheet" href="styles/dialog-polyfill.css">
+        <script src="scripts/dialog-polyfill.js"></script>
+    </head>
     <body>
         <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header mdl-layout--fixed-tabs">
             <header class="mdl-layout__header">
@@ -18,10 +20,8 @@
                 </div>
 
                 <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
-                    <a href="#tab-users" class="mdl-layout__tab is-active">Users</a>
-                    <a href="#tab-trips" class="mdl-layout__tab">Trips</a>
+                    <a href="#tab-people" class="mdl-layout__tab is-active">People</a>
                     <a href="#tab-expenses" class="mdl-layout__tab">Expenses</a>
-                    <a href="#tab-debts" class="mdl-layout__tab">Debts</a>
                 </div>
             </header>
 
@@ -30,37 +30,164 @@
             </div>
 
             <main class="mdl-layout__content">
-                <section id="tab-users" class="mdl-layout__tab-panel is-active">
+                <section id="tab-people" class="mdl-layout__tab-panel is-active">
                     <div class="page-content">
                         <ul class="mdl-list">
-                            <li class="mdl-list__item mdl-list__item--three-line" v-for="user in users">
+                            <li class="mdl-list__item mdl-list__item--three-line" v-for="person in people">
                                 <span class="mdl-list__item-primary-content">
                                     <i class="material-icons mdl-list__item-avatar">person</i>
-                                    <span>{{ user.name }}</span>
-                                    <span class="mdl-list__item-text-body">{{ user.email }}</span>
+                                    <span>{{ person.name }}</span>
                                 </span>
 
                                 <span>
-                                    <a onclick="dom.registerDialog('#user-edit-dialog')" @click="editUser(user)" class="user-edit-button" class="mdl-list__item-secondary-action"><i class="material-icons">edit</i></a>
-                                    <a @click="removeUser(user)" class="mdl-list__item-secondary-action"><i class="material-icons">delete</i></a>
+                                    <a onclick="dom.registerDialog('#people-edit-dialog')" @click="editPerson(person)" class="people-edit-button" class="mdl-list__item-secondary-action"><i class="material-icons">edit</i></a>
+                                    <a @click="removePerson(person)" class="mdl-list__item-secondary-action"><i class="material-icons">delete</i></a>
                                 </span>
                             </li>
                         </ul>
 
-                        <button onclick="dom.registerDialog('#user-add-dialog')" id="user-add-button" class="mdl-button mdl-js-button mdl-button--fab mdl-button--bottom-right mdl-js-ripple-effect mdl-button--colored">
+                        <button onclick="dom.registerDialog('#people-add-dialog')" id="people-add-button" class="mdl-button mdl-js-button mdl-button--fab mdl-button--bottom-right mdl-js-ripple-effect mdl-button--colored">
                             <i class="material-icons">person_add</i>
+                        </button>
+                    </div>
+                </section>
+
+                <section id="tab-expenses" class="mdl-layout__tab-panel">
+                    <div class="page-content">
+                        <ul class="mdl-list">
+                            <li class="mdl-list__item mdl-list__item--three-line" v-for="expense in expenses">
+                                <span class="mdl-list__item-primary-content">
+                                    <i class="material-icons mdl-list__item-avatar">attach_money</i>
+
+                                    <span>${{ expense.value}}</span>
+
+                                    <span class="mdl-list__item-text-body">{{ expense.description }}</span>
+                                </span>
+
+                                <span>
+                                    <a onclick="dom.registerDialog('#expenses-edit-dialog')" class="expenses-edit-button" @click="editExpense(expense)" class="mdl-list__item-secondary-action"><i class="material-icons">edit</i></a>
+                                    <a @click="removeExpense(expense)" class="mdl-list__item-secondary-action"><i class="material-icons">delete</i></a>
+                                </span>
+                            </li>
+                        </ul>
+
+                        <button onclick="dom.registerDialog('#expenses-add-dialog')" id="expenses-add-button" class="mdl-button mdl-js-button mdl-button--fab mdl-button--bottom-right mdl-js-ripple-effect mdl-button--colored">
+                            <i class="material-icons">add_shopping_cart</i>
                         </button>
                     </div>
                 </section>
             </main>
         </div>
+
+
+        
+
+        <dialog id="people-add-dialog" class="mdl-dialog">
+            <h4 class="mdl-dialog__title">Add Person</h4>
+
+            <div class="mdl-dialog__content">
+                <form action="#">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input id="name" class="mdl-textfield__input" type="text" v-model="tmpPerson.name">
+                        <label class="mdl-textfield__label" for="name">Name...</label>
+                    </div>
+                </form>
+            </div>
+
+            <div class="mdl-dialog__actions">
+                <button onclick="dom.closeDialog('#people-add-dialog')" type="button" class="mdl-button submit" @click="addPerson(tmpPerson)">Add</button>
+                <button onclick="dom.closeDialog('#people-add-dialog')" type="button" class="mdl-button close">Cancel</button>
+            </div>
+        </dialog>
+
+        <dialog id="people-edit-dialog" class="mdl-dialog">
+            <h4 class="mdl-dialog__title">Edit Person</h4>
+
+            <div class="mdl-dialog__content">
+                <form action="#">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input id="name" class="mdl-textfield__input" type="text" value="{{ tmpPerson.name }}" v-model="tmpPerson.name">
+                    </div>
+                </form>
+            </div>
+
+            <div class="mdl-dialog__actions">
+                <button onclick="dom.closeDialog('#people-edit-dialog')" type="button" class="mdl-button submit" @click="doneEditPerson(tmpPerson)">Edit</button>
+                <button onclick="dom.closeDialog('#people-edit-dialog')" type="button" class="mdl-button close" @click="cancelEditPerson(tmpPerson)">Cancel</button>
+            </div>
+        </dialog>
+
+
+        <dialog id="expenses-add-dialog" class="mdl-dialog">
+            <h4 class="mdl-dialog__title">Add Expense</h4>
+
+            <div class="mdl-dialog__content">
+                <form action="#">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input id="value" class="mdl-textfield__input" type="text" pattern="^[0-9]*(\.[0-9]+)?" v-model="tmpExpense.value" number>
+                        <label class="mdl-textfield__label" for="value">Value...</label>
+                        <span class="mdl-textfield__error">Value is not a positive number!</span>
+                    </div>
+
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input id="description" class="mdl-textfield__input" type="text" v-model="tmpExpense.description">
+                        <label class="mdl-textfield__label" for="description">Description...</label>
+                    </div>
+
+                    <select multiple v-model="tmpIndebted">
+                        <option selected v-for="person in people" v-bind:value="$index">{{ person.name }}</option>
+                    </select>
+                </form>
+            </div>
+
+            <div class="mdl-dialog__actions">
+                <button onclick="dom.closeDialog('#expenses-add-dialog')" type="button" class="mdl-button submit" @click="addExpense(tmpExpense)">Add</button>
+                <button onclick="dom.closeDialog('#expenses-add-dialog')" type="button" class="mdl-button close">Cancel</button>
+            </div>
+        </dialog>
+
+
+
+
+
+
+
+
+
+
+        <dialog id="expenses-edit-dialog" class="mdl-dialog">
+            <h4 class="mdl-dialog__title">Edit Expense</h4>
+
+            <div class="mdl-dialog__content">
+                <form action="#">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input id="value" class="mdl-textfield__input" type="text" pattern="^[0-9]*(\.[0-9]+)?" value="{{ tmpExpense.value }}" v-model="tmpExpense.value" number>
+                        <span class="mdl-textfield__error">Value is not a positive number!</span>
+                    </div>
+
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input id="description" class="mdl-textfield__input" type="text" value="{{ tmpExpense.description }}" v-model="tmpExpense.description">
+                    </div>
+
+                    <select multiple v-model="tmpIndebted">
+                        <option selected v-for="person in people" v-bind:value="$index">{{ person.name }}</option>
+                    </select>
+                </form>
+            </div>
+
+            <div class="mdl-dialog__actions">
+                <button onclick="dom.closeDialog('#expenses-edit-dialog')" type="button" class="mdl-button submit" @click="doneEditExpense(tmpExpense)">Edit</button>
+                <button onclick="dom.closeDialog('#expenses-edit-dialog')"type="button" class="mdl-button close" @click="cancelEditExpense(tmpExpense)">Cancel</button>
+            </div>
+        </dialog>
     </body>
 
     <script src="scripts/jquery-3.1.0.min.js"></script>
     <script src="scripts/material.min.js"></script>
     <script src="scripts/vue.js"></script>
+    <!-- <script src="scripts/vue.min.js"></script>-->
+    <script src="scripts/helpers.js"></script>
     <script src="scripts/storage.js"></script>
-    <script src="scripts/api.js"></script>
-    <script src="scripts/app.js"></script>
     <script src="scripts/dom.js"></script>
+    <script src="scripts/app.js"></script>
 </html>

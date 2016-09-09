@@ -36,6 +36,20 @@
             dialog.querySelector('.submit').addEventListener('click', function() {
                 dialog.close();
             });
+        },
+
+        init: function() {
+            var list = [
+                { dialog: '#trip-add-dialog', button: '#trip-add-button'},
+                { dialog: '#people-add-dialog', button: '#people-add-button'},
+                { dialog: '#people-edit-dialog', button: '.people-edit-button'},
+                { dialog: '#expenses-add-dialog', button: '#expenses-add-button' },
+                { dialog: '#expenses-edit-dialog', button: '.expenses-edit-button' },
+            ];
+
+            list.forEach(function(i) {
+                dom.registerDialogAndButton(i.dialog, i.button);
+            });
         }
     };
 
