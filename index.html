@@ -30,7 +30,22 @@
             </div>
 
             <main class="mdl-layout__content">
-                
+                <section id="tab-people" class="mdl-layout__tab-panel is-active">
+                    <div class="page-content">
+                        <ul class="mdl-list">
+                            <li class="mdl-list__item mdl-list__item--three-line" v-for="person in people">
+                                <span class="mdl-list__item-primary-content">
+                                    <i class="material-icons mdl-list__item-avatar">person</i>
+                                    <span>{{ person.name }}</span>
+                                </span>
+                            </li>
+                        </ul>
+
+                        <button id="people-add-button" class="mdl-button mdl-js-button mdl-button--fab mdl-button--bottom-right mdl-js-ripple-effect mdl-button--colored">
+                            <i class="material-icons">person_add</i>
+                        </button>
+                    </div>
+                </section>
             </main>
         </div>
     </body>
