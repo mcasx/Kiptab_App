@@ -18,7 +18,7 @@
                 </div>
 
                 <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
-                    <a href="#tab-people" class="mdl-layout__tab is-active">People</a>
+                    <a href="#tab-users" class="mdl-layout__tab is-active">Users</a>
                     <a href="#tab-trips" class="mdl-layout__tab">Trips</a>
                     <a href="#tab-expenses" class="mdl-layout__tab">Expenses</a>
                     <a href="#tab-debts" class="mdl-layout__tab">Debts</a>
@@ -30,28 +30,26 @@
             </div>
 
             <main class="mdl-layout__content">
-                <section id="tab-people" class="mdl-layout__tab-panel is-active">
+                <section id="tab-users" class="mdl-layout__tab-panel is-active">
                     <div class="page-content">
                         <ul class="mdl-list">
-                            <li class="mdl-list__item mdl-list__item--three-line" v-for="person in people">
+                            <li class="mdl-list__item mdl-list__item--three-line" v-for="user in users">
                                 <span class="mdl-list__item-primary-content">
                                     <i class="material-icons mdl-list__item-avatar">person</i>
-                                    <span>{{ person.name }}</span>
-                                    <span class="mdl-list__item-text-body">{{ person.email }}</span>
+                                    <span>{{ user.name }}</span>
+                                    <span class="mdl-list__item-text-body">{{ user.email }}</span>
                                 </span>
 
                                 <span>
-                                    <a onclick="dom.registerDialog('#people-edit-dialog')" @click="editPerson(person)" class="people-edit-button" class="mdl-list__item-secondary-action"><i class="material-icons">edit</i></a>
-                                    <a @click="removePerson(person)" class="mdl-list__item-secondary-action"><i class="material-icons">delete</i></a>
+                                    <a onclick="dom.registerDialog('#user-edit-dialog')" @click="editUser(user)" class="user-edit-button" class="mdl-list__item-secondary-action"><i class="material-icons">edit</i></a>
+                                    <a @click="removeUser(user)" class="mdl-list__item-secondary-action"><i class="material-icons">delete</i></a>
                                 </span>
                             </li>
                         </ul>
 
-                        <button onclick="dom.registerDialog('#people-add-dialog')" id="people-add-button" class="mdl-button mdl-js-button mdl-button--fab mdl-button--bottom-right mdl-js-ripple-effect mdl-button--colored">
+                        <button onclick="dom.registerDialog('#user-add-dialog')" id="user-add-button" class="mdl-button mdl-js-button mdl-button--fab mdl-button--bottom-right mdl-js-ripple-effect mdl-button--colored">
                             <i class="material-icons">person_add</i>
                         </button>
-
-
                     </div>
                 </section>
             </main>
