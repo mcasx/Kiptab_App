@@ -15,7 +15,6 @@
             tmpExpense: { debtors: [], creditor: { email: '', name: ''}, value: 0, description: '' },
             tmpTrip: { description: '', distance: 0, consumption: 0, fuel: 0, lastPoint: null, isStopped: false, watchId: 0 },
             tmpPerson: { email: '', name: ''},
-            tmpIndebted: [],
 
             cache: {},
         },
@@ -49,7 +48,6 @@
             resetState: function() {
                 this.tmpPerson = { email: '', name: '' };
                 this.tmpExpense= { debtors: [], creditor: { email: '', name: ''}, value: 0, description: '' },
-                this.tmpIndebted = [];
                 this.tmpTrip = { description: '', distance: 0,consumption: 0, fuel: 0, lastPoint: null, isStopped: false, watchId: 0 };
                 this.cache = {};
             },
@@ -107,6 +105,26 @@
 
                 this.resetState();
             },
+
+            /*******************************************************************
+             * DEBTS
+             ******************************************************************/
+
+             calculateDebt(user){
+                 var g = this.groups[this.groups.indexOf(this.settings.currentGroup)];
+                 var debt = 0;
+                 for(var i=0; i < g.expenses.length; i++){
+                    if( areObjectsEqual(g.expenses[i].creditor, user) && arrayContainsObject(g.expenses[i].debtors, this.settings.currentUser)){                                  //Incase of debt
+                        debt += g.expenses[i].value/g.expenses[i].debtors.length;
+                    }
+                    if( areObjectsEqual(g.expenses[i].creditor, this.settings.currentUser) && arrayContainsObject(g.expenses[i].debtors, user)){             //Incase of credit
+                        debt -= g.expenses[i].value/g.expenses[i].debtores.length;
+                    }
+
+                 }
+
+                 return debt;
+             }
         }
     });
 
