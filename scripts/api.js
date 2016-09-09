@@ -4,17 +4,10 @@
 
     exports.api = {
         get: function(route) {
-            if(route == '/') route = '';
 
-            var results;
+        },
+        post: function(route, data) {
 
-            $.get('/api' + route, function (data) {
-                console.log('GET ' + (route ? route : '/'));
-                console.log(data);
-                results = data;
-            });
-
-            return results;
         }
     }
 

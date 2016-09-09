@@ -5,8 +5,14 @@ app = Flask(__name__, static_url_path='')
 
 @app.route('/api')
 def api():
-    data = json.load(open('mock.json'))
-    return jsonify(**data)
+    if request.method == 'GET':
+        with open('data.json') as f:
+            data = json.load(f)
+            return jsonify(**data)
+
+    if request.method == 'POST':
+        with open('data.json', 'w') as f:
+            json.dump(data, f, ensure_ascii=False)
 
 @app.route('/')
 def index():
