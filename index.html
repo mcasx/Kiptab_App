@@ -38,12 +38,19 @@
                                     <i class="material-icons mdl-list__item-avatar">person</i>
                                     <span>{{ person.name }}</span>
                                 </span>
+
+                                <span>
+                                    <a @click="editPerson(person)" class="people-edit-button" class="mdl-list__item-secondary-action"><i class="material-icons">edit</i></a>
+                                    <a @click="removePerson(person)" class="mdl-list__item-secondary-action"><i class="material-icons">delete</i></a>
+                                </span>
                             </li>
                         </ul>
 
                         <button id="people-add-button" class="mdl-button mdl-js-button mdl-button--fab mdl-button--bottom-right mdl-js-ripple-effect mdl-button--colored">
                             <i class="material-icons">person_add</i>
                         </button>
+
+
                     </div>
                 </section>
             </main>
