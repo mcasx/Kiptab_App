@@ -1,0 +1,11 @@
+.mdl-button--bottom-right {
+    bottom: 45px;
+    padding-top: 24px;
+    position: fixed;
+    right: 24px;
+    z-index: 998;
+}
+
+.mdl-data-table {
+    width: 100%;
+}
