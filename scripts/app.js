@@ -72,11 +72,20 @@
                 this.groups[this.groups.indexOf(this.state.currentGroup)].users.$remove(user);
             },
 
+            createGroup: function(group) {
+                group.users = [this.state.currentUser];
+                group.expenses = {};
+                console.log(group);
+                this.groups.push(group);
+            },
+
             groupsOfUser: function (user) {
                 var groups = [];
 
+                console.log(this.groups.length);
                 this.groups.forEach(function(group) {
-                    if (arrayContainsObject(group.users, user)) {
+                    console.log(helpers.arrayContainsObject(group.users, user));
+                    if (helpers.arrayContainsObject(group.users, user)) {
                         groups.push(group);
                     }
                 });
@@ -130,11 +139,11 @@
                  var balance = 0;
 
                  group.expenses.forEach(function(expense) {
-                     if(expense.creditor.email == user1.email && arrayContainsObject(expense.debtors, user2)) {
+                     if(expense.creditor.email == user1.email && helpers.arrayContainsObject(expense.debtors, user2)) {
                          balance += expense.value / expense.debtors.length;
                      }
 
-                     if(expense.creditor.email == user2.email && arrayContainsObject(expense.debtors, user1)) {
+                     if(expense.creditor.email == user2.email && helpers.arrayContainsObject(expense.debtors, user1)) {
                          balance -= expense.value / expense.debtors.length;
                      }
                  });
