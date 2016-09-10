@@ -16,6 +16,8 @@
                 { "email": "manuelxarez@ua.pt", "name": "Manuel Xarez" },
                 { "email": "johnconnor@terminator.pt", "name": "John Connor"}
             ],
+            //Handled locally
+            trip: storage.fetch('trip') || {debtors: [], creditor: { email: '', name: ''}, distance: 0, description: '', pricePerLiter: 0, consumption: 0, lastPoint: null, currentState: 3, watchId: 0 },
 
             tmpExpense: { debtors: [], creditor: { email: '', name: ''}, value: 0, description: '' },
             tmpTrip: { debtors: [], creditor: { email: '', name: ''}, distance: 0, description: '', pricePerLiter: 0, consumption: 0, lastPoint: null, currentState: 0, watchId: 0 },
@@ -46,6 +48,13 @@
                     storage.save('users', val)
                 }
             },
+
+            trip: {
+                deep: true,
+                handler: function(val) {
+                    storage.save('trip', val)
+                }
+            }
         },
 
         methods: {
@@ -76,7 +85,7 @@
             resetState: function() {
                 this.tmpUser = { email: '', name: '' };
                 this.tmpExpense= { debtors: [], creditor: { email: '', name: ''}, value: 0, description: '' };
-                this.tmpTrip= { debtors: [], creditor: { email: '', name: ''}, distance: 0, description: '', pricePerLiter: 0, consumption: 0, lastPoint: null, currentState: 0, watchId: 0 };
+                this.tmpTrip= { debtors: [], creditor: { email: '', name: ''}, distance: 0, description: '', pricePerLiter: 0, consumption: 0, lastPoint: null, currentState: 3, watchId: 0 };
                 this.tmpGroup = { name: '', users: [], expenses: [], trips: []};
                 this.cache = {};
             },
@@ -252,7 +261,7 @@
               ******************************************************************/
 
               addTrip: function(trip) {
-                  this.state.currentGroup.trips.push({
+                  this.trip= {
                       debtors: trip.debtors,
                       creditor: this.state.currentUser,
                       distance: 0,
@@ -262,7 +271,7 @@
                       lastPoint: null,
                       currentState: 0,
                       watchId: 0
-                  });
+                  };
 
                   this.resetState();
               },
@@ -279,7 +288,7 @@
                   var self = this;
                   // Push first position
                   navigator.geolocation.getCurrentPosition(function(position){
-                      self.state.currentGroup.trips[self.state.currentGroup.trips.indexOf(trip)].lastPoint = position;
+                      self.trip.lastPoint = position;
                   }, function(err) {
                       console.warn('ERROR(' + err.code + '): ' + err.message);
                   }, options);
@@ -307,14 +316,8 @@
                       value: trip.distance / trip.consumption * trip.pricePerLiter,
                       description: trip.description + ' (' + trip.distance.toFixed(2) + ' km)'
                   };
-                  trip.currentState = 3;
-
+                  this.trip = {debtors: [], creditor: { email: '', name: ''}, distance: 0, description: '', pricePerLiter: 0, consumption: 0, lastPoint: null, currentState: 3, watchId: 0 },
                   this.addExpense(expense);
-              },
-
-              removeTrip: function (trip) {
-                  this.state.currentGroup.trips.$remove(trip);
-                  this.updateGroup();
               },
 
               // TODO: use altitude as well

@@ -84,7 +84,6 @@
                 <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
                     <a href="#tab-users" class="mdl-layout__tab is-active disabled">Friends</a>
                     <a href="#tab-expenses" class="mdl-layout__tab disabled">Expenses</a>
-                    <a href="#tab-travel" class="mdl-layout__tab disable">Travel</a>
                     <a href="#tab-balance" class="mdl-layout__tab disabled">Balance</a>
                 </div>
             </header>
@@ -158,6 +157,19 @@
                 <section id="tab-expenses" class="mdl-layout__tab-panel">
                     <div class="page-content">
                         <ul class="mdl-list">
+                            <li class="mdl-list__item mdl-list__item--three-line">
+                                <span class="mdl-list__item-primary-content">
+                                    <i class="material-icons mdl-list__item-avatar">directions_car</i>
+                                    <span>{{ trip.distance.toFixed(2) }} km</span>
+                                </span>
+
+                                <span>
+                                    <a v-show="trip.currentState == 0 || trip.currentState == 2" @click="startTrip(trip)" class="trip-start-button mdl-list__item-secondary-action"><i class="material-icons">play_arrow</i></a>
+                                    <a v-show="trip.currentState == 1" @click="pauseTrip(trip)" class="trip-pause-button mdl-list__item-secondary-action"><i class="material-icons">pause</i></a>
+                                    <a v-show="trip.currentState != 3" @click="stopTrip(trip)" class="trip-stop-button mdl-list__item-secondary-action"><i class="material-icons">stop</i></a>
+                                    <a onclick="dom.registerDialog('#trip-add-dialog')" v-show="trip.currentState == 3" class="trip-stop-button mdl-list__item-secondary-action"><i class="material-icons">add</i></a>
+                                </span>
+                            </li>
                             <li class="mdl-list__item mdl-list__item--three-line" v-for="expense in state.currentGroup.expenses">
                                 <span class="mdl-list__item-primary-content">
                                     <i class="material-icons mdl-list__item-avatar">attach_money</i>
@@ -176,32 +188,6 @@
 
                         <button onclick="dom.registerDialog('#expenses-add-dialog')" id="expenses-add-button" class="mdl-button mdl-js-button mdl-button--fab mdl-button--bottom-right mdl-js-ripple-effect mdl-button--colored">
                             <i class="material-icons">add_shopping_cart</i>
-                        </button>
-                    </div>
-                </section>
-
-                <section id="tab-travel" class="mdl-layout__tab-panel">
-                    <div class="page-content">
-                        <ul class="mdl-list">
-                            <li class="mdl-list__item mdl-list__item--three-line" v-for="trip in state.currentGroup.trips">
-                                <span class="mdl-list__item-primary-content">
-                                    <i class="material-icons mdl-list__item-avatar">directions_car</i>
-                                    <span>{{ trip.distance.toFixed(2) }} km</span>
-
-                                    <span class="mdl-list__item-text-body">{{ trip.description }}</span>
-                                </span>
-
-                                <span>
-                                    <a v-show="trip.currentState == 0 || trip.currentState == 2" @click="startTrip(trip)" class="trip-start-button mdl-list__item-secondary-action"><i class="material-icons">play_arrow</i></a>
-                                    <a v-show="trip.currentState == 1" @click="pauseTrip(trip)" class="trip-pause-button mdl-list__item-secondary-action"><i class="material-icons">pause</i></a>
-                                    <a v-show="trip.currentState != 3" @click="stopTrip(trip)" class="trip-stop-button mdl-list__item-secondary-action"><i class="material-icons">stop</i></a>
-                                    <a v-show="trip.currentState == 3" @click="removeTrip(trip)" class="trip-remove-button mdl-list__item-secondary-action"><i class="material-icons">delete</i></a>
-                                </span>
-                            </li>
-                        </ul>
-
-                        <button onclick="dom.registerDialog('#trip-add-dialog')" id="trip-add-button" class="mdl-button mdl-js-button mdl-button--fab mdl-button--bottom-right mdl-js-ripple-effect mdl-button--colored">
-                            <i class="material-icons">add</i>
                         </button>
                     </div>
                 </section>
@@ -319,7 +305,6 @@
                 <button onclick="dom.closeDialog('#expenses-edit-dialog')"type="button" class="mdl-button close" @click="cancelEditExpense(tmpExpense)">Cancel</button>
             </div>
         </dialog>
-
 
         <dialog id="trip-add-dialog" class="mdl-dialog">
             <h4 class="mdl-dialog__title">Add Trip</h4>
