@@ -86,7 +86,7 @@
                     <a href="#tab-users" class="mdl-layout__tab is-active disabled">Friends</a>
                     <a href="#tab-expenses" class="mdl-layout__tab disabled">Expenses</a>
                     <a href="#tab-travel" class="mdl-layout__tab disable">Travel</a>
-                    <a href="#tab-debts" class="mdl-layout__tab disabled">Debts</a>
+                    <a href="#tab-balance" class="mdl-layout__tab disabled">Balance</a>
                 </div>
             </header>
 
@@ -200,20 +200,21 @@
                     </div>
                 </section>
 
-                <section id="tab-debts" class="mdl-layout__tab-panel">
+                <section id="tab-balance" class="mdl-layout__tab-panel">
                     <div class="page-content">
                         <table class="mdl-data-table mdl-js-data-table">
                             <thead>
                                 <tr>
                                     <th class="mdl-data-table__cell--non-numeric">Person</th>
-                                    <th>Debt</th>
+                                    <th>Balance</th>
                                 </tr>
                             </thead>
 
                             <tbody>
                                 <tr v-for="user in state.currentGroup.users"  v-if="!sameUser(user,state.currentUser)">
                                     <td class="mdl-data-table__cell--non-numeric">{{ user.name }}</td>
-                                    <td>${{ balanceBetween(user,state.currentUser).toFixed(2) }}</td>
+                                    <td style="color:#FF0000" v-if="balanceBetween(state.currentUser,user) < 0">{{ balanceBetween(state.currentUser,user).toFixed(2) }}$</td>
+                                    <td style="color:#008516" v-else> {{ balanceBetween(state.currentUser,user).toFixed(2) }}$</td>
                                 </tr>
                             </tbody>
                         </table>

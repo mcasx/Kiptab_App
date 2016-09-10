@@ -243,7 +243,6 @@
               ******************************************************************/
 
               addTrip: function(trip) {
-                  console.log(trip.debtors);
                   this.trips.push({
                       debtors: trip.debtors,
                       creditor: this.state.currentUser,
@@ -278,7 +277,6 @@
 
                   // Position watcher, pushes new position when user moves, calculate distance as you go
                   trip.watchId = navigator.geolocation.watchPosition(function(position) {
-                      console.log(position);
                       trip.distance += self.calculateDistance(position, trip.lastPoint);
                       trip.lastPoint = position;
                   }, function(err) {
