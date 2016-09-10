@@ -187,9 +187,9 @@
                                 </span>
 
                                 <span>
-                                    <a @click="startTrip(trip)" class="trip-start-button mdl-list__item-secondary-action"><i class="material-icons">play_arrow</i></a>
-                                    <a @click="pauseTrip(trip)" class="trip-pause-button mdl-list__item-secondary-action"><i class="material-icons">pause</i></a>
-                                    <a @click="stopTrip(trip)" class="trip-stop-button mdl-list__item-secondary-action"><i class="material-icons">stop</i></a>
+                                    <a v-show="trip.currentState == 0 || trip.currentState == 2" @click="startTrip(trip)" class="trip-start-button mdl-list__item-secondary-action"><i class="material-icons">play_arrow</i></a>
+                                    <a v-show="trip.currentState == 1" @click="pauseTrip(trip)" class="trip-pause-button mdl-list__item-secondary-action"><i class="material-icons">pause</i></a>
+                                    <a v-show="trip.currentState != 3" @click="stopTrip(trip)" class="trip-stop-button mdl-list__item-secondary-action"><i class="material-icons">stop</i></a>
                                 </span>
                             </li>
                         </ul>
@@ -214,7 +214,7 @@
                                 <tr v-for="user in state.currentGroup.users"  v-if="!sameUser(user,state.currentUser)">
                                     <td class="mdl-data-table__cell--non-numeric">{{ user.name }}</td>
                                     <td style="color:#FF0000" v-if="balanceBetween(state.currentUser,user) < 0">{{ balanceBetween(state.currentUser,user).toFixed(2) }}$</td>
-                                    <td style="color:#008516" v-else> {{ balanceBetween(state.currentUser,user).toFixed(2) }}$</td>
+                                    <td style="color:#008516" v-else>{{ balanceBetween(state.currentUser,user).toFixed(2) }}$</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -314,7 +314,7 @@
 
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <input id="consumption" class="mdl-textfield__input" type="text" pattern="^[0-9]*(\.[0-9]+)?" v-model="tmpTrip.consumption" number>
-                        <label class="mdl-textfield__label" for="consumption">Consumption... (L/Km)</label>
+                        <label class="mdl-textfield__label" for="consumption">Consumption... (Km/L)</label>
                         <span class="mdl-textfield__error">Consumption is not a positive number!</span>
                     </div>
 
