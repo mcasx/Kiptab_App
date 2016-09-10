@@ -16,7 +16,7 @@
             trips: storage.fetch('trips') || [],
 
             tmpExpense: { debtors: [], creditor: { email: '', name: ''}, value: 0, description: '' },
-            tmpTrip: { description: '', distance: 0, consumption: 0, fuel: 0, lastPoint: null, isStopped: false, watchId: 0 },
+            tmpTrip: { debtors: [], creditor: { email: '', name: ''}, distance: 0, description: '', pricePerLiter: 0, consumption: 0, lastPoint: null, isStopped: false, watchId: 0 },
             tmpUser: { email: '', name: ''},
 
             cache: {},
@@ -73,7 +73,7 @@
             resetState: function() {
                 this.tmpUser = { email: '', name: '' };
                 this.tmpExpense= { debtors: [], creditor: { email: '', name: ''}, value: 0, description: '' },
-                this.tmpTrip = { description: '', distance: 0,consumption: 0, fuel: 0, lastPoint: null, isStopped: false, watchId: 0 };
+                this.tmpTrip = { description: '', distance: 0, consumption: 0, lastPoint: null, isStopped: false, watchId: 0 };
                 this.cache = {};
             },
 
@@ -237,6 +237,90 @@
 
                  return balance;
              }
+
+             /*******************************************************************
+              * TRIPS
+              ******************************************************************/
+
+              addTrip: function(trip) {
+                  this.trips.push({
+                      debtors: debtors,
+                      creditor: this.state.currentUser,
+                      distance: 0,
+                      description: trip.description.trim() || ' ',
+                      pricePerLiter: trip.pricePerLiter,
+                      consumption: trip.consumption,
+                      lastPoint: null,
+                      isStopped: false,
+                      watchId: 0
+                  });
+
+                  this.resetState();
+              },
+
+              startTrip: function(trip) {
+                  if(!navigator.geolocation) console.log('Geolocation is not supported.');
+
+                  var options = {
+                      enableHighAccuracy: false,
+                      timeout: 5000,
+                      maximumAge: 0
+                  };
+
+                  // Push first position
+                  navigator.geolocation.getCurrentPosition(function(position){
+                      this.trips[this.trips.indexOf(trip)].lastPoint = position;
+                  }, function(err) {
+                      console.warn('ERROR(' + err.code + '): ' + err.message);
+                  }, options);
+
+                  // Position watcher, pushes new position when user moves, calculate distance as you go
+                  trip.watchId = navigator.geolocation.watchPosition(function(position) {
+                      trip.distance += this.calculateDistance(position, trip.lastPoint);
+                      trip.lastPoint = position;
+                  }, function(err) {
+                      console.warn('ERROR(' + err.code + '): ' + err.message);
+                  }, options);
+              },
+
+              pauseTrip: function(trip) {
+                  navigator.geolocation.clearWatch(trip.watchId);
+              },
+
+              stopTrip: function(trip) {
+                  navigator.geolocation.clearWatch(trip.watchId);
+
+                  var expense = {
+                      debtors: trip.debtors,
+                      creditor: trip.creditor,
+                      value: trip.distance * trip.consumption * trip.pricePerLiter,
+                      description: trip.description + ' (' + trip.distance + ' km)'
+                  };
+                  trip.isStopped = true;
+
+                  this.addExpense(expense);
+              },
+
+              // TODO: use altitude as well
+              calculateDistance: function(p1, p2) {
+                  var R = 6371;
+                  var lat1 = p1.coords.latitude;
+                  var lat2 = p2.coords.latitude;
+
+                  var lon1 = p1.coords.longitude;
+                  var lon2 = p2.coords.longitude;
+
+                  var dLat = (lat2 - lat1).toRad();
+                  var dLon = (lon2 - lon1).toRad();
+
+                  var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                          Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) *
+                          Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                  var d = R * c;
+
+                  return d;
+              }
         }
     });
 })(window);
