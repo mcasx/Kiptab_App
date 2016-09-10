@@ -71,13 +71,6 @@
             <header class="mdl-layout__header">
                 <div class="mdl-layout__header-row">
                     <span class="mdl-layout-title">Kiptab</span>
-
-                    <div class="mdl-layout-spacer"></div>
-
-                    <nav class="mdl-navigation mdl-layout--large-screen-only">
-                        <a class="mdl-navigation__link" href=""><i class="material-icons">user</i> Edit Profile</a>
-                        <a class="mdl-navigation__link" href=""><i class="material-icons">settings</i> Link</a>
-                    </nav>
                 </div>
 
                 <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
@@ -87,33 +80,28 @@
             </header>
 
             <div class="mdl-layout__drawer">
-                <span class="mdl-layout-title">Kiptab</span>
+                <span class="mdl-layout-title">Groups</span>
 
                 <nav class="mdl-navigation">
-                    <a class="mdl-navigation__link" href=""><i class="material-icons">user</i> Edit Profile</a>
-                    <a class="mdl-navigation__link" href=""><i class="material-icons">settings</i> Link</a>
-                    <a class="mdl-navigation__link" href=""><i class="material-icons">settings</i> Link</a>
-                </nav>
-
-                <nav class="mdl-navigation">
-                    <a class="mdl-navigation__link" href=""><i class="material-icons">user</i> Edit Profile</a>
-                    <a class="mdl-navigation__link" href=""><i class="material-icons">settings</i> Link</a>
-                    <a class="mdl-navigation__link" href=""><i class="material-icons">settings</i> Link</a>
+                    <a v-for="group in groupsOfUser(state.currentUser)" class="mdl-navigation__link" href="">
+                        <i class="material-icons">group</i>
+                        {{ group.name }}
+                    </a>
                 </nav>
             </div>
 
             <main class="mdl-layout__content">
                 <section id="tab-users" class="mdl-layout__tab-panel is-active">
-                    <div v-if="groupsOfUser(state.currentUser).length > 0" class="page-content">
+                    <div v-if="userHasGroup()" class="page-content">
                         <ul class="mdl-list">
                             <li class="mdl-list__item mdl-list__item--three-line" v-for="user in state.currentGroup.users">
                                 <span class="mdl-list__item-primary-content">
-                                    <i class="material-icons mdl-list__item-avatar">user</i>
+                                    <i class="material-icons mdl-list__item-avatar">person</i>
                                     <span>{{ user.name }}</span>
+                                    <span class="mdl-list__item-text-body">{{ user.email }}</span>
                                 </span>
 
                                 <span>
-                                    <a onclick="dom.registerDialog('#users-edit-dialog')" @click="editUser(user)" class="users-edit-button" class="mdl-list__item-secondary-action"><i class="material-icons">edit</i></a>
                                     <a @click="removeUser(user)" class="mdl-list__item-secondary-action"><i class="material-icons">delete</i></a>
                                 </span>
                             </li>
@@ -191,7 +179,7 @@
             </div>
 
             <div class="mdl-dialog__actions">
-                <button onclick="dom.closeDialog('#users-add-dialog')" type="button" class="mdl-button submit" @click="addUser(tmpUser)">Add</button>
+                <button onclick="dom.closeDialog('#users-add-dialog')" type="button" class="mdl-button submit" @click="inviteUser(tmpUser.email)">Add</button>
                 <button onclick="dom.closeDialog('#users-add-dialog')" type="button" class="mdl-button close">Cancel</button>
             </div>
         </dialog>
@@ -239,7 +227,7 @@
                         <input id="description" class="mdl-textfield__input" type="text" value="{{ tmpExpense.description }}" v-model="tmpExpense.description">
                     </div>
 
-                    <select multiple v-model="state.currentUser.debtors">
+                    <select multiple v-model="tmpExpense.debtors">
                         <option selected v-for="user in users" v-bind:value="$index">{{ user.name }}</option>
                     </select>
                 </form>

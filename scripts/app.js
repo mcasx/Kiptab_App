@@ -5,9 +5,14 @@
         el: 'body',
 
         data: {
-            state: storage.fetch('state') || { isFirstTime: true, currentUser: {}, currentGroup: {} },
+            state: storage.fetch('state') || { isFirstTime: true, currentUser: { name: '', email: '' }, currentGroup: { name: '', expenses: [], users: [] } },
             groups: storage.fetch('groups') || [],
-            users: storage.fetch('users') || [],
+            users: [
+                { "email": "silverio@ua.pt", "name": "Silvério" },
+                { "email": "fabio.maia@ua.pt", "name": "Fábio Maia" },
+                { "email": "manuelxarez@ua.pt", "name": "Manuel Xarez" },
+                { "email": "johnconnor@terminator.pt", "name": "John Connor"}
+            ],
             trips: storage.fetch('trips') || [],
 
             tmpExpense: { debtors: [], creditor: { email: '', name: ''}, value: 0, description: '' },
@@ -41,6 +46,16 @@
         },
 
         methods: {
+            indexOfGroup: function(group) {
+                for(var i = 0; i < this.groups.length; i++) {
+                    if (this.groups[i].name == group.name) {
+                        return i;
+                    }
+                }
+
+                return -1;
+            },
+
             resetState: function() {
                 this.tmpUser = { email: '', name: '' };
                 this.tmpExpense= { debtors: [], creditor: { email: '', name: ''}, value: 0, description: '' },
@@ -48,49 +63,76 @@
                 this.cache = {};
             },
 
+            updateGroup: function() {
+                console.log(this.indexOfGroup(this.state.currentGroup));
+                this.groups[this.indexOfGroup(this.state.currentGroup)] = this.state.currentGroup;
+            },
+
             /*******************************************************************
              * USERS
              ******************************************************************/
 
-             registerUser: function(user) {
-                 this.state.isFirstTime = false;
-                 this.users.push(user);
-             },
+            getUserByEmail: function(email) {
+                var u = null;
 
-            inviteUser: function(user) {
-                if(!userExists(this.users, user)) return 0; //ERROR - USER NOT FOUND
-                this.state.currentGroup.users.push({
-                    email: user.email,
-                    name: user.name
+                this.users.forEach(function(user) {
+                    if (user.email == email) {
+                        u = user;
+                        return;
+                    }
                 });
 
+                return u;
+            },
+
+            registerUser: function(user) {
+                this.state.isFirstTime = false;
+                this.users.push(user);
+            },
+
+            inviteUser: function(email) {
+                var u = this.getUserByEmail(email);
+                var b = true;
+
+                if (u) {
+                    this.state.currentGroup.users.push(u);
+                    this.updateGroup();
+                } else {
+                    b = false;
+                }
+
                 this.resetState();
-                return 1;
+
+                return b;
             },
 
             removeUser: function (user) {
-                this.groups[this.groups.indexOf(this.state.currentGroup)].users.$remove(user);
+                this.state.currentGroup.users.$remove(user);
+                this.updateGroup();
             },
 
             createGroup: function(group) {
                 group.users = [this.state.currentUser];
                 group.expenses = {};
-                console.log(group);
+
                 this.groups.push(group);
+                this.state.currentGroup = group;
+            },
+
+            userHasGroup: function() {
+                return this.groupsOfUser(this.state.currentUser).length > 0;
             },
 
             groupsOfUser: function (user) {
-                var groups = [];
+                var g = [];
 
-                console.log(this.groups.length);
                 this.groups.forEach(function(group) {
-                    console.log(helpers.arrayContainsObject(group.users, user));
                     if (helpers.arrayContainsObject(group.users, user)) {
-                        groups.push(group);
+                        g.push(group);
                     }
                 });
 
-                return groups;
+                return g;
             },
 
             /*******************************************************************
@@ -98,18 +140,21 @@
              ******************************************************************/
 
             addExpense: function (expense) {
-                this.expenses.push({
+                this.currentGroup.expenses.push({
                     debtors: expense.debtors,
                     creditor: this.state.currentUser,
                     value: expense.value || 0.00,
                     description: expense.description.trim() || ' '
                 });
 
+                this.updateGroup();
+
                 this.resetState();
             },
 
             removeExpense: function (expense) {
-                this.groups[this.groups.indexOf(this.state.currentGroup)].expenses.$remove(expense);
+                this.state.currentGroup.expenses.$remove(expense);
+                this.updateGroup();
             },
 
             editExpense: function (expense) {
@@ -135,7 +180,7 @@
              ******************************************************************/
 
              balanceBetween(user1, user2){
-                 var group = this.groups[this.groups.indexOf(this.state.currentGroup)];
+                 var group = this.state.currentGroup;
                  var balance = 0;
 
                  group.expenses.forEach(function(expense) {

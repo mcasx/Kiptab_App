@@ -18,22 +18,15 @@
             return arr;
         },
 
-        userExists: function(arr, obj) {
-            arr.forEach(function(item) {
-                if (helpers.areObjectsEqual(item.email, obj)) {
-                    return true;
-                }
-            });
-        },
-
         arrayContainsObject: function(arr, obj) {
+            var b = false;
             arr.forEach(function(item) {
                 if (helpers.areObjectsEqual(item, obj)) {
-                    return true;
+                    b = true;
                 }
             });
 
-            return false;
+            return b;
         },
 
         areObjectsEqual: function(obj1, obj2) {
