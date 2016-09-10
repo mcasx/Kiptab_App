@@ -16,12 +16,11 @@
                 { "email": "manuelxarez@ua.pt", "name": "Manuel Xarez" },
                 { "email": "johnconnor@terminator.pt", "name": "John Connor"}
             ],
-            //Handled locally
-            trips: storage.fetch('trips') || [],
 
             tmpExpense: { debtors: [], creditor: { email: '', name: ''}, value: 0, description: '' },
             tmpTrip: { debtors: [], creditor: { email: '', name: ''}, distance: 0, description: '', pricePerLiter: 0, consumption: 0, lastPoint: null, currentState: 0, watchId: 0 },
             tmpUser: { email: '', name: ''},
+            tmpGroup: { name: '', users: [], expenses: [], trips: []},
 
             cache: {},
         },
@@ -47,13 +46,6 @@
                     storage.save('users', val)
                 }
             },
-
-            trips: {
-                deep: true,
-                handler: function(val) {
-                    storage.save('trips', val)
-                }
-            }
         },
 
         methods: {
@@ -85,6 +77,7 @@
                 this.tmpUser = { email: '', name: '' };
                 this.tmpExpense= { debtors: [], creditor: { email: '', name: ''}, value: 0, description: '' };
                 this.tmpTrip= { debtors: [], creditor: { email: '', name: ''}, distance: 0, description: '', pricePerLiter: 0, consumption: 0, lastPoint: null, currentState: 0, watchId: 0 };
+                this.tmpGroup = { name: '', users: [], expenses: [], trips: []};
                 this.cache = {};
             },
 
@@ -137,10 +130,14 @@
 
             createGroup: function(group) {
                 group.users = [this.state.currentUser];
-                group.expenses = [];
-
                 this.groups.push(group);
                 this.state.currentGroup = group;
+                this.updateGroup();
+            },
+
+            changeGroup: function(group) {
+                this.state.currentGroup = group;
+                this.resetState();
             },
 
             userHasGroup: function() {
@@ -254,7 +251,7 @@
               ******************************************************************/
 
               addTrip: function(trip) {
-                  this.trips.push({
+                  this.state.currentGroup.trips.push({
                       debtors: trip.debtors,
                       creditor: this.state.currentUser,
                       distance: 0,
@@ -281,7 +278,7 @@
                   var self = this;
                   // Push first position
                   navigator.geolocation.getCurrentPosition(function(position){
-                      self.trips[self.trips.indexOf(trip)].lastPoint = position;
+                      self.currentGroup.trips[self.currentGroup.trips.indexOf(trip)].lastPoint = position;
                   }, function(err) {
                       console.warn('ERROR(' + err.code + '): ' + err.message);
                   }, options);

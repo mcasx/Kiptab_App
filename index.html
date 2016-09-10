@@ -60,11 +60,11 @@
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <input class="mdl-textfield__input" type="text" v-model="state.currentUser.email">
                         <label class="mdl-textfield__label" for="name">Email...</label>
-                    </div>
 
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <input class="mdl-textfield__input" type="text" v-model="state.currentUser.name">
                         <label class="mdl-textfield__label" for="name">Name...</label>
+                    </div>
                     </div>
                 </div>
 
@@ -94,10 +94,18 @@
                 <span class="mdl-layout-title">Groups</span>
 
                 <nav class="mdl-navigation">
-                    <a v-for="group in groupsOfUser(state.currentUser)" class="mdl-navigation__link" href="">
-                        <i class="material-icons">group</i>
-                        {{ group.name }}
-                    </a>
+                    <ul class="mdl-list">
+                        <li v-for="group in groupsOfUser(state.currentUser)" class="mdl-list__item mdl-list__item--three-line" v-for="group in groupsOfUser(state.currentUser)">
+                            <a @click="changeGroup(group)" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+                                <span class="mdl-chip">
+                                    <span class="mdl-chip__text">{{ group.name }}</span>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                    <button onclick="dom.registerDialog('#group-add-dialog')" id="group-add-button" class="mdl-button mdl-js-button mdl-button--fab mdl-button--bottom-right mdl-js-ripple-effect mdl-button--colored">
+                        <i class="material-icons">group_add</i>
+                    </button>
                 </nav>
             </div>
 
@@ -119,7 +127,7 @@
                         </ul>
 
                         <button onclick="dom.registerDialog('#users-add-dialog')" id="users-add-button" class="mdl-button mdl-js-button mdl-button--fab mdl-button--bottom-right mdl-js-ripple-effect mdl-button--colored">
-                            <i class="material-icons">group_add</i>
+                            <i class="material-icons">person_add</i>
                         </button>
                     </div>
 
@@ -178,7 +186,7 @@
                 <section id="tab-travel" class="mdl-layout__tab-panel">
                     <div class="page-content">
                         <ul class="mdl-list">
-                            <li class="mdl-list__item mdl-list__item--three-line" v-for="trip in trips">
+                            <li class="mdl-list__item mdl-list__item--three-line" v-for="trip in state.currentGroup.trips">
                                 <span class="mdl-list__item-primary-content">
                                     <i class="material-icons mdl-list__item-avatar">directions_car</i>
                                     <span>{{ trip.distance.toFixed(2) }} km</span>
@@ -222,6 +230,25 @@
                 </section>
             </main>
         </div>
+
+        <dialog id="group-add-dialog" class="mdl-dialog">
+            <h4 class="mdl-dialog__title">Create a Group</h4>
+
+            <div class="mdl-dialog__content">
+                <form action="#">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input class="mdl-textfield__input" type="text" v-model="tmpGroup.name">
+                        <label class="mdl-textfield__label" for="name">Name...</label>
+                    </div>
+                </form>
+            </div>
+
+            <div class="mdl-dialog__actions">
+                <button onclick="dom.closeDialog('#group-add-dialog')" type="button" class="mdl-button submit" @click="createGroup(tmpGroup)">Add</button>
+                <button onclick="dom.closeDialog('#group-add-dialog')" type="button" class="mdl-button close">Cancel</button>
+            </div>
+        </dialog>
+
 
         <dialog id="users-add-dialog" class="mdl-dialog">
             <h4 class="mdl-dialog__title">Invite Friend to Group</h4>
