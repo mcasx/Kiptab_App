@@ -72,8 +72,8 @@
 
             resetState: function() {
                 this.tmpUser = { email: '', name: '' };
-                this.tmpExpense= { debtors: [], creditor: { email: '', name: ''}, value: 0, description: '' },
-                this.tmpTrip = { description: '', distance: 0, consumption: 0, lastPoint: null, isStopped: false, watchId: 0 };
+                this.tmpExpense= { debtors: [], creditor: { email: '', name: ''}, value: 0, description: '' };
+                this.tmpTrip= { debtors: [], creditor: { email: '', name: ''}, distance: 0, description: '', pricePerLiter: 0, consumption: 0, lastPoint: null, isStopped: false, watchId: 0 };
                 this.cache = {};
             },
 
@@ -243,8 +243,9 @@
               ******************************************************************/
 
               addTrip: function(trip) {
+                  console.log(trip.debtors);
                   this.trips.push({
-                      debtors: debtors,
+                      debtors: trip.debtors,
                       creditor: this.state.currentUser,
                       distance: 0,
                       description: trip.description.trim() || ' ',
@@ -267,16 +268,18 @@
                       maximumAge: 0
                   };
 
+                  var self = this;
                   // Push first position
                   navigator.geolocation.getCurrentPosition(function(position){
-                      this.trips[this.trips.indexOf(trip)].lastPoint = position;
+                      self.trips[self.trips.indexOf(trip)].lastPoint = position;
                   }, function(err) {
                       console.warn('ERROR(' + err.code + '): ' + err.message);
                   }, options);
 
                   // Position watcher, pushes new position when user moves, calculate distance as you go
                   trip.watchId = navigator.geolocation.watchPosition(function(position) {
-                      trip.distance += this.calculateDistance(position, trip.lastPoint);
+                      console.log(position);
+                      trip.distance += self.calculateDistance(position, trip.lastPoint);
                       trip.lastPoint = position;
                   }, function(err) {
                       console.warn('ERROR(' + err.code + '): ' + err.message);

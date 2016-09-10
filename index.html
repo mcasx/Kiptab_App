@@ -76,6 +76,7 @@
                 <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
                     <a href="#tab-users" class="mdl-layout__tab is-active disabled">Friends</a>
                     <a href="#tab-expenses" class="mdl-layout__tab disabled">Expenses</a>
+                    <a href="#tab-travel" class="mdl-layout__tab disable">Travel</a>
                     <a href="#tab-debts" class="mdl-layout__tab disabled">Debts</a>
                 </div>
             </header>
@@ -161,6 +162,31 @@
 
                         <button onclick="dom.registerDialog('#expenses-add-dialog')" id="expenses-add-button" class="mdl-button mdl-js-button mdl-button--fab mdl-button--bottom-right mdl-js-ripple-effect mdl-button--colored">
                             <i class="material-icons">add_shopping_cart</i>
+                        </button>
+                    </div>
+                </section>
+
+                <section id="tab-travel" class="mdl-layout__tab-panel">
+                    <div class="page-content">
+                        <ul class="mdl-list">
+                            <li class="mdl-list__item mdl-list__item--three-line" v-for="trip in trips">
+                                <span class="mdl-list__item-primary-content">
+                                    <i class="material-icons mdl-list__item-avatar">directions_car</i>
+                                    <span>{{ trip.distance }} km</span>
+
+                                    <span class="mdl-list__item-text-body">{{ trip.description }}</span>
+                                </span>
+
+                                <span>
+                                    <a @click="startTrip(trip)" class="trip-start-button mdl-list__item-secondary-action"><i class="material-icons">play_arrow</i></a>
+                                    <a @click="pauseTrip(trip)" class="trip-pause-button mdl-list__item-secondary-action"><i class="material-icons">pause</i></a>
+                                    <a @click="stopTrip(trip)" class="trip-stop-button mdl-list__item-secondary-action"><i class="material-icons">stop</i></a>
+                                </span>
+                            </li>
+                        </ul>
+
+                        <button onclick="dom.registerDialog('#trip-add-dialog')" id="trip-add-button" class="mdl-button mdl-js-button mdl-button--fab mdl-button--bottom-right mdl-js-ripple-effect mdl-button--colored">
+                            <i class="material-icons">add</i>
                         </button>
                     </div>
                 </section>
@@ -256,6 +282,41 @@
             <div class="mdl-dialog__actions">
                 <button onclick="dom.closeDialog('#expenses-edit-dialog')" type="button" class="mdl-button submit" @click="doneEditExpense(tmpExpense)">Edit</button>
                 <button onclick="dom.closeDialog('#expenses-edit-dialog')"type="button" class="mdl-button close" @click="cancelEditExpense(tmpExpense)">Cancel</button>
+            </div>
+        </dialog>
+
+
+        <dialog id="trip-add-dialog" class="mdl-dialog">
+            <h4 class="mdl-dialog__title">Add Trip</h4>
+
+            <div class="mdl-dialog__content">
+                <form action="#">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input id="description" class="mdl-textfield__input" type="text" v-model="tmpTrip.description">
+                        <label class="mdl-textfield__label" for="description">Description...</label>
+                    </div>
+
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input id="value" class="mdl-textfield__input" type="text" pattern="^[0-9]*(\.[0-9]+)?" v-model="tmpTrip.pricePerLiter" number>
+                        <label class="mdl-textfield__label" for="value">Price per liter...</label>
+                        <span class="mdl-textfield__error"> Not a positive number!</span>
+                    </div>
+
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input id="consumption" class="mdl-textfield__input" type="text" pattern="^[0-9]*(\.[0-9]+)?" v-model="tmpTrip.consumption" number>
+                        <label class="mdl-textfield__label" for="consumption">Consumption... (L/Km)</label>
+                        <span class="mdl-textfield__error">Consumption is not a positive number!</span>
+                    </div>
+
+                    <select multiple v-model="tmpTrip.debtors">
+                        <option selected v-for="user in state.currentGroup.users" value="{{ user.email }}">{{ user.name }}</option>
+                    </select>
+                </form>
+            </div>
+
+            <div class="mdl-dialog__actions">
+                <button onclick="dom.closeDialog('#trip-add-dialog')" type="button" class="mdl-button submit" @click="addTrip(tmpTrip)">Add</button>
+                <button onclick="dom.closeDialog('#trip-add-dialog')" type="button" class="mdl-button close">Cancel</button>
             </div>
         </dialog>
     </body>
