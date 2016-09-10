@@ -56,6 +56,20 @@
                 return -1;
             },
 
+            indexOfUser: function(user,group) {
+                for(var i = 0; i < group.users.length; i++) {
+                    if (group.users[i].name == user.name) {
+                        return i;
+                    }
+                }
+
+                return 0;
+            },
+
+            sameUser: function(user1, user2) {
+                return user1.email == user2.email;
+            },
+
             resetState: function() {
                 this.tmpUser = { email: '', name: '' };
                 this.tmpExpense= { debtors: [], creditor: { email: '', name: ''}, value: 0, description: '' },
