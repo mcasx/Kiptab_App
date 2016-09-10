@@ -24,9 +24,8 @@ by balancing debts automagically.
 ### Server
 
 ```
-$ export FLASK_APP=server.py
-$ flask initdb
-$ flask run
+$ chmod +x start.sh
+$ ./start.sh
 ```
 
 ### Client

@@ -5,14 +5,13 @@ from flask import Flask, request, send_from_directory, jsonify, session, g, redi
 
 app = Flask(__name__, static_url_path='')
 
-app.config.update(dict(
+app.config.update(
     DATABASE=os.path.join(app.root_path, 'kiptab.db'),
     DEBUG=True,
     SECRET_KEY='development key',
     USERNAME='admin',
     PASSWORD='default'
-))
-app.config.from_envvar('FLASKR_SETTINGS', silent=True)
+)
 
 ################################################################################
 # Database
