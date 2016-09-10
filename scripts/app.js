@@ -64,7 +64,6 @@
             },
 
             updateGroup: function() {
-                console.log(this.indexOfGroup(this.state.currentGroup));
                 this.groups[this.indexOfGroup(this.state.currentGroup)] = this.state.currentGroup;
             },
 
@@ -113,7 +112,7 @@
 
             createGroup: function(group) {
                 group.users = [this.state.currentUser];
-                group.expenses = {};
+                group.expenses = [];
 
                 this.groups.push(group);
                 this.state.currentGroup = group;
@@ -126,20 +125,20 @@
             userExistsIn: function(array, user) {
                 var b = false;
 
-                array.forEach(function(item)) {
+                array.forEach(function(item) {
                     if(item.email == user.email) {
                         b = true;
                     }
-                }
+                });
 
                 return b;
             },
 
             groupsOfUser: function (user) {
                 var g = [];
-
+                var self = this;
                 this.groups.forEach(function(group) {
-                    if (this.userExistsIn(group.users, user)) {
+                    if (self.userExistsIn(group.users, user)) {
                         g.push(group);
                     }
                 });
@@ -180,7 +179,14 @@
             },
 
             doneEditExpense: function (expense) {
+                var debtors = [];
+                for(var i=0; i < expense.debtors.length; i++){
+                        debtors.push(this.getUserByEmail(expense.debtors[i]));
+                };
+                expense.debtors = debtors;
+
                 this.resetState();
+                this.updateGroup();
             },
 
             cancelEditExpense: function (expense) {
