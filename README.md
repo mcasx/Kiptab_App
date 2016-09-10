@@ -21,15 +21,29 @@ by balancing debts automagically.
 
 ## Development
 
+
 ### Server
 
-Set `DEBUG=True` in `app.config` and run:
+Python, SQLite, Flask
+
+### Client
+
+HTML, CSS, JavaScript, Vue.js, Material Design Lite
+
+## Deployment
+
+- Run:
+
+```
+$ https://github.com/portosummerofcode/psc16-team37.git
+$ cd psc16-team37/
+```
+
+- Set `DEBUG=True` in `app.config`
+
+- Run:
 
 ```
 $ chmod +x start.sh
 $ ./start.sh
 ```
-
-### Client
-
-Compile the client on PhoneGap.
