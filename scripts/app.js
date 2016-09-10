@@ -146,6 +146,10 @@
                 return g;
             },
 
+            usersInCurrentGroup: function() {
+                return groupsOfUser(this.state.tmpUser)
+            },
+
             /*******************************************************************
              * EXPENSES
              ******************************************************************/
@@ -180,13 +184,14 @@
 
             doneEditExpense: function (expense) {
                 var debtors = [];
-                for(var i=0; i < expense.debtors.length; i++){
-                        debtors.push(this.getUserByEmail(expense.debtors[i]));
-                };
+                for(var i = 0; i < expense.debtors.length; i++) {
+                    debtors.push(this.getUserByEmail(expense.debtors[i]));
+                }
+
                 expense.debtors = debtors;
 
-                this.resetState();
                 this.updateGroup();
+                this.resetState();
             },
 
             cancelEditExpense: function (expense) {

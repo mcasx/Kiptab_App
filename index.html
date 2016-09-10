@@ -13,7 +13,7 @@
         <script src="scripts/dialog-polyfill.js"></script>
     </head>
     <body>
-        <div v-if="state.isFirstTime">
+        <div v-show="state.isFirstTime">
             <style>
                 .welcome-card.mdl-card {
                     width: 100% !important;
@@ -142,7 +142,7 @@
                 <section id="tab-expenses" class="mdl-layout__tab-panel">
                     <div class="page-content">
                         <ul class="mdl-list">
-                            <li class="mdl-list__item mdl-list__item--three-line" v-for="expense in expenses">
+                            <li class="mdl-list__item mdl-list__item--three-line" v-for="expense in state.currentGroup.expenses">
                                 <span class="mdl-list__item-primary-content">
                                     <i class="material-icons mdl-list__item-avatar">attach_money</i>
 
@@ -200,9 +200,8 @@
                         <label class="mdl-textfield__label" for="description">Description...</label>
                     </div>
 
-                    <label class="mdl-textfield__label" for="description">Debtors...</label>
                     <select multiple v-model="tmpExpense.debtors">
-                        <option selected v-for="user in users" value="{{ user.email }}">{{ user.name }}</option>
+                        <option v-for="user in state.currentGroup.users" value="{{ user.email }}">{{ user.name }}</option>
                     </select>
                 </form>
             </div>
@@ -228,7 +227,7 @@
                     </div>
 
                     <select multiple v-model="tmpExpense.debtors">
-                        <option selected v-for="user in users" v-bind:value="$index">{{ user.name }}</option>
+                        <option v-for="user in state.currentGroup.users" value="{{ user.email }}">{{ user.name }}</option>
                     </select>
                 </form>
             </div>
