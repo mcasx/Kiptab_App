@@ -35,11 +35,11 @@ HTML, CSS, JavaScript, Vue.js, Material Design Lite
 - Run:
 
 ```
-$ https://github.com/portosummerofcode/psc16-team37.git
+$ git clone https://github.com/portosummerofcode/psc16-team37.git
 $ cd psc16-team37/
 ```
 
-- Set `DEBUG=True` in `app.config`
+- Make sure `DEBUG=True` is set in `app.config`
 
 - Run:
 
