@@ -5,19 +5,22 @@
         el: 'body',
 
         data: {
+            //Handled locally
             state: storage.fetch('state') || { isFirstTime: true, currentUser: { name: '', email: '' }, currentGroup: { name: '', expenses: [], users: [] } },
+            //Handled @server
             groups: storage.fetch('groups') || [],
+            //Handled @server
             users: [
                 { "email": "silverio@ua.pt", "name": "Silvério" },
                 { "email": "fabio.maia@ua.pt", "name": "Fábio Maia" },
                 { "email": "manuelxarez@ua.pt", "name": "Manuel Xarez" },
                 { "email": "johnconnor@terminator.pt", "name": "John Connor"}
             ],
-            trips: storage.fetch('trips') || [],
 
             tmpExpense: { debtors: [], creditor: { email: '', name: ''}, value: 0, description: '' },
-            tmpTrip: { debtors: [], creditor: { email: '', name: ''}, distance: 0, description: '', pricePerLiter: 0, consumption: 0, lastPoint: null, isStopped: false, watchId: 0 },
+            tmpTrip: { debtors: [], creditor: { email: '', name: ''}, distance: 0, description: '', pricePerLiter: 0, consumption: 0, lastPoint: null, currentState: 0, watchId: 0 },
             tmpUser: { email: '', name: ''},
+            tmpGroup: { name: '', users: [], expenses: [], trips: []},
 
             cache: {},
         },
@@ -42,7 +45,7 @@
                 handler: function(val) {
                     storage.save('users', val)
                 }
-            }
+            },
         },
 
         methods: {
@@ -73,7 +76,8 @@
             resetState: function() {
                 this.tmpUser = { email: '', name: '' };
                 this.tmpExpense= { debtors: [], creditor: { email: '', name: ''}, value: 0, description: '' };
-                this.tmpTrip= { debtors: [], creditor: { email: '', name: ''}, distance: 0, description: '', pricePerLiter: 0, consumption: 0, lastPoint: null, isStopped: false, watchId: 0 };
+                this.tmpTrip= { debtors: [], creditor: { email: '', name: ''}, distance: 0, description: '', pricePerLiter: 0, consumption: 0, lastPoint: null, currentState: 0, watchId: 0 };
+                this.tmpGroup = { name: '', users: [], expenses: [], trips: []};
                 this.cache = {};
             },
 
@@ -126,10 +130,14 @@
 
             createGroup: function(group) {
                 group.users = [this.state.currentUser];
-                group.expenses = [];
-
                 this.groups.push(group);
                 this.state.currentGroup = group;
+                this.updateGroup();
+            },
+
+            changeGroup: function(group) {
+                this.state.currentGroup = group;
+                this.resetState();
             },
 
             userHasGroup: function() {
@@ -243,8 +251,7 @@
               ******************************************************************/
 
               addTrip: function(trip) {
-                  console.log(trip.debtors);
-                  this.trips.push({
+                  this.state.currentGroup.trips.push({
                       debtors: trip.debtors,
                       creditor: this.state.currentUser,
                       distance: 0,
@@ -252,7 +259,7 @@
                       pricePerLiter: trip.pricePerLiter,
                       consumption: trip.consumption,
                       lastPoint: null,
-                      isStopped: false,
+                      currentState: 0,
                       watchId: 0
                   });
 
@@ -261,7 +268,7 @@
 
               startTrip: function(trip) {
                   if(!navigator.geolocation) console.log('Geolocation is not supported.');
-
+                  trip.currentState = 1;
                   var options = {
                       enableHighAccuracy: false,
                       timeout: 5000,
@@ -271,14 +278,13 @@
                   var self = this;
                   // Push first position
                   navigator.geolocation.getCurrentPosition(function(position){
-                      self.trips[self.trips.indexOf(trip)].lastPoint = position;
+                      self.currentGroup.trips[self.currentGroup.trips.indexOf(trip)].lastPoint = position;
                   }, function(err) {
                       console.warn('ERROR(' + err.code + '): ' + err.message);
                   }, options);
 
                   // Position watcher, pushes new position when user moves, calculate distance as you go
                   trip.watchId = navigator.geolocation.watchPosition(function(position) {
-                      console.log(position);
                       trip.distance += self.calculateDistance(position, trip.lastPoint);
                       trip.lastPoint = position;
                   }, function(err) {
@@ -288,6 +294,7 @@
 
               pauseTrip: function(trip) {
                   navigator.geolocation.clearWatch(trip.watchId);
+                  trip.currentState = 2;
               },
 
               stopTrip: function(trip) {
@@ -296,10 +303,10 @@
                   var expense = {
                       debtors: trip.debtors,
                       creditor: trip.creditor,
-                      value: trip.distance * trip.consumption * trip.pricePerLiter,
-                      description: trip.description + ' (' + trip.distance + ' km)'
+                      value: trip.distance / trip.consumption * trip.pricePerLiter,
+                      description: trip.description + ' (' + trip.distance.toFixed(2) + ' km)'
                   };
-                  trip.isStopped = true;
+                  trip.currentState = 3;
 
                   this.addExpense(expense);
               },

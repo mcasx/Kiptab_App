@@ -60,11 +60,11 @@
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <input class="mdl-textfield__input" type="text" v-model="state.currentUser.email">
                         <label class="mdl-textfield__label" for="name">Email...</label>
-                    </div>
 
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <input class="mdl-textfield__input" type="text" v-model="state.currentUser.name">
                         <label class="mdl-textfield__label" for="name">Name...</label>
+                    </div>
                     </div>
                 </div>
 
@@ -86,7 +86,7 @@
                     <a href="#tab-users" class="mdl-layout__tab is-active disabled">Friends</a>
                     <a href="#tab-expenses" class="mdl-layout__tab disabled">Expenses</a>
                     <a href="#tab-travel" class="mdl-layout__tab disable">Travel</a>
-                    <a href="#tab-debts" class="mdl-layout__tab disabled">Debts</a>
+                    <a href="#tab-balance" class="mdl-layout__tab disabled">Balance</a>
                 </div>
             </header>
 
@@ -94,10 +94,18 @@
                 <span class="mdl-layout-title">Groups</span>
 
                 <nav class="mdl-navigation">
-                    <a v-for="group in groupsOfUser(state.currentUser)" class="mdl-navigation__link" href="">
-                        <i class="material-icons">group</i>
-                        {{ group.name }}
-                    </a>
+                    <ul class="mdl-list">
+                        <li v-for="group in groupsOfUser(state.currentUser)" class="mdl-list__item mdl-list__item--three-line" v-for="group in groupsOfUser(state.currentUser)">
+                            <a @click="changeGroup(group)" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+                                <span class="mdl-chip">
+                                    <span class="mdl-chip__text">{{ group.name }}</span>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                    <button onclick="dom.registerDialog('#group-add-dialog')" id="group-add-button" class="mdl-button mdl-js-button mdl-button--fab mdl-button--bottom-right mdl-js-ripple-effect mdl-button--colored">
+                        <i class="material-icons">group_add</i>
+                    </button>
                 </nav>
             </div>
 
@@ -119,7 +127,7 @@
                         </ul>
 
                         <button onclick="dom.registerDialog('#users-add-dialog')" id="users-add-button" class="mdl-button mdl-js-button mdl-button--fab mdl-button--bottom-right mdl-js-ripple-effect mdl-button--colored">
-                            <i class="material-icons">group_add</i>
+                            <i class="material-icons">person_add</i>
                         </button>
                     </div>
 
@@ -157,7 +165,7 @@
                                 <span class="mdl-list__item-primary-content">
                                     <i class="material-icons mdl-list__item-avatar">attach_money</i>
 
-                                    <span>${{ expense.value}}</span>
+                                    <span>${{ expense.value.toFixed(2) }}</span>
 
                                     <span class="mdl-list__item-text-body">{{ expense.description }}</span>
                                 </span>
@@ -178,18 +186,18 @@
                 <section id="tab-travel" class="mdl-layout__tab-panel">
                     <div class="page-content">
                         <ul class="mdl-list">
-                            <li class="mdl-list__item mdl-list__item--three-line" v-for="trip in trips">
+                            <li class="mdl-list__item mdl-list__item--three-line" v-for="trip in state.currentGroup.trips">
                                 <span class="mdl-list__item-primary-content">
                                     <i class="material-icons mdl-list__item-avatar">directions_car</i>
-                                    <span>{{ trip.distance }} km</span>
+                                    <span>{{ trip.distance.toFixed(2) }} km</span>
 
                                     <span class="mdl-list__item-text-body">{{ trip.description }}</span>
                                 </span>
 
                                 <span>
-                                    <a @click="startTrip(trip)" class="trip-start-button mdl-list__item-secondary-action"><i class="material-icons">play_arrow</i></a>
-                                    <a @click="pauseTrip(trip)" class="trip-pause-button mdl-list__item-secondary-action"><i class="material-icons">pause</i></a>
-                                    <a @click="stopTrip(trip)" class="trip-stop-button mdl-list__item-secondary-action"><i class="material-icons">stop</i></a>
+                                    <a v-show="trip.currentState == 0 || trip.currentState == 2" @click="startTrip(trip)" class="trip-start-button mdl-list__item-secondary-action"><i class="material-icons">play_arrow</i></a>
+                                    <a v-show="trip.currentState == 1" @click="pauseTrip(trip)" class="trip-pause-button mdl-list__item-secondary-action"><i class="material-icons">pause</i></a>
+                                    <a v-show="trip.currentState != 3" @click="stopTrip(trip)" class="trip-stop-button mdl-list__item-secondary-action"><i class="material-icons">stop</i></a>
                                 </span>
                             </li>
                         </ul>
@@ -200,20 +208,21 @@
                     </div>
                 </section>
 
-                <section id="tab-debts" class="mdl-layout__tab-panel">
+                <section id="tab-balance" class="mdl-layout__tab-panel">
                     <div class="page-content">
                         <table class="mdl-data-table mdl-js-data-table">
                             <thead>
                                 <tr>
                                     <th class="mdl-data-table__cell--non-numeric">Person</th>
-                                    <th>Debt</th>
+                                    <th>Balance</th>
                                 </tr>
                             </thead>
 
                             <tbody>
                                 <tr v-for="user in state.currentGroup.users"  v-if="!sameUser(user,state.currentUser)">
                                     <td class="mdl-data-table__cell--non-numeric">{{ user.name }}</td>
-                                    <td>${{ balanceBetween(user,state.currentUser) }}</td>
+                                    <td style="color:#FF0000" v-if="balanceBetween(state.currentUser,user) < 0">{{ balanceBetween(state.currentUser,user).toFixed(2) }}$</td>
+                                    <td style="color:#008516" v-else>{{ balanceBetween(state.currentUser,user).toFixed(2) }}$</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -221,6 +230,25 @@
                 </section>
             </main>
         </div>
+
+        <dialog id="group-add-dialog" class="mdl-dialog">
+            <h4 class="mdl-dialog__title">Create a Group</h4>
+
+            <div class="mdl-dialog__content">
+                <form action="#">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input class="mdl-textfield__input" type="text" v-model="tmpGroup.name">
+                        <label class="mdl-textfield__label" for="name">Name...</label>
+                    </div>
+                </form>
+            </div>
+
+            <div class="mdl-dialog__actions">
+                <button onclick="dom.closeDialog('#group-add-dialog')" type="button" class="mdl-button submit" @click="createGroup(tmpGroup)">Add</button>
+                <button onclick="dom.closeDialog('#group-add-dialog')" type="button" class="mdl-button close">Cancel</button>
+            </div>
+        </dialog>
+
 
         <dialog id="users-add-dialog" class="mdl-dialog">
             <h4 class="mdl-dialog__title">Invite Friend to Group</h4>
@@ -313,7 +341,7 @@
 
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <input id="consumption" class="mdl-textfield__input" type="text" pattern="^[0-9]*(\.[0-9]+)?" v-model="tmpTrip.consumption" number>
-                        <label class="mdl-textfield__label" for="consumption">Consumption... (L/Km)</label>
+                        <label class="mdl-textfield__label" for="consumption">Consumption... (Km/L)</label>
                         <span class="mdl-textfield__error">Consumption is not a positive number!</span>
                     </div>
 
