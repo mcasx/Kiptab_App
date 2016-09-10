@@ -58,12 +58,14 @@
              },
 
             inviteUser: function(user) {
-                this.groups[this.groups.indexOf(this.state.currentGroup)].users.push({
+                if(!userExists(this.users, user)) return 0; //ERROR - USER NOT FOUND
+                this.state.currentGroup.users.push({
                     email: user.email,
                     name: user.name
                 });
 
                 this.resetState();
+                return 1;
             },
 
             removeUser: function (user) {
