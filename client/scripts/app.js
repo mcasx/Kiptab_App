@@ -133,6 +133,7 @@
                 this.groups.push(group);
                 this.state.currentGroup = group;
                 this.updateGroup();
+                this.resetState();
             },
 
             changeGroup: function(group) {

@@ -31,12 +31,12 @@
 
                 .welcome-card > .mdl-card__title {
                     color: #fff;
-                    height: 55vh;
+                    height: 48vh;
                     background: url('images/welcome.jpg') center / cover;
                 }
 
                 .welcome-card > .mdl-card__supporting-text {
-                    height: 45vh;
+                    height: 52vh;
                 }
 
                 .welcome-card > .mdl-card__actions {
@@ -91,19 +91,17 @@
 
             <div class="mdl-layout__drawer">
                 <span class="mdl-layout-title">Groups</span>
-
                 <nav class="mdl-navigation">
-                    <ul class="mdl-list">
-                        <li v-for="group in groupsOfUser(state.currentUser)" class="mdl-list__item mdl-list__item--three-line" v-for="group in groupsOfUser(state.currentUser)">
-                            <a @click="changeGroup(group)" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
-                                <span class="mdl-chip">
-                                    <span class="mdl-chip__text">{{ group.name }}</span>
-                                </span>
-                            </a>
-                        </li>
-                    </ul>
-                    <button onclick="dom.registerDialog('#group-add-dialog')" id="group-add-button" class="mdl-button mdl-js-button mdl-button--fab mdl-button--bottom-right mdl-js-ripple-effect mdl-button--colored">
-                        <i class="material-icons">group_add</i>
+                    <table class="mdl-data-table mdl-js-data-table">
+                        <tbody>
+                            <tr @click="changeGroup(group)" v-for="group in groupsOfUser(state.currentUser)">
+                                <td class="mdl-data-table__cell--non-numeric">{{ group.name }}</td>
+                                <td>{{ group.users.length }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button onclick="dom.registerDialog('#group-add-dialog')" id="group-add-button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">
+                        Add Group
                     </button>
                 </nav>
             </div>
