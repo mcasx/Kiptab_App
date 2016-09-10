@@ -10,12 +10,7 @@
             //Handled @server
             groups: storage.fetch('groups') || [],
             //Handled @server
-            users: [
-                { "email": "silverio@ua.pt", "name": "Silvério" },
-                { "email": "fabio.maia@ua.pt", "name": "Fábio Maia" },
-                { "email": "manuelxarez@ua.pt", "name": "Manuel Xarez" },
-                { "email": "johnconnor@terminator.pt", "name": "John Connor"}
-            ],
+            users: storage.fetch('users') || [], 
             //Handled locally
             trip: storage.fetch('trip') || {debtors: [], creditor: { email: '', name: ''}, distance: 0, description: '', pricePerLiter: 0, consumption: 0, lastPoint: null, currentState: 3, watchId: 0 },
 
