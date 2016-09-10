@@ -102,23 +102,23 @@ def api_groups_get():
 
 @app.route('/')
 def client_index():
-    return open('index.html').read()
+    return open('../client/index.html').read()
 
 @app.route('/scripts/<path:path>')
 def client_scripts(path):
-    return send_from_directory('scripts', path)
+    return send_from_directory('../client/scripts', path)
 
 @app.route('/styles/<path:path>')
 def client_styles(path):
-    return send_from_directory('styles', path)
+    return send_from_directory('../client/styles', path)
 
 @app.route('/images/<path:path>')
 def client_images(path):
-    return send_from_directory('images', path)
+    return send_from_directory('../client/images', path)
 
 @app.route('/fonts/<path:path>')
 def client_fonts(path):
-    return send_from_directory('fonts', path)
+    return send_from_directory('../client/fonts', path)
 
 
 if __name__ == "__main__":

@@ -221,7 +221,7 @@ fabric.properties
 
 # *.iml
 # modules.xml
-# .idea/misc.xml 
+# .idea/misc.xml
 # *.ipr
 
 
@@ -292,9 +292,6 @@ dist/
 
 # Flycheck
 flycheck_*.el
-
-# server auth directory
-/server/
 
 # projectiles files
 .projectile
