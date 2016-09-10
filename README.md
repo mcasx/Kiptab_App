@@ -23,6 +23,8 @@ by balancing debts automagically.
 
 ### Server
 
+Set `DEBUG=True` in `app.config` and run:
+
 ```
 $ chmod +x start.sh
 $ ./start.sh

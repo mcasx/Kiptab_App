@@ -7,7 +7,7 @@ app = Flask(__name__, static_url_path='')
 
 app.config.update(
     DATABASE=os.path.join(app.root_path, 'kiptab.db'),
-    DEBUG=True,
+    DEBUG=False,
     SECRET_KEY='development key',
     USERNAME='admin',
     PASSWORD='default'
