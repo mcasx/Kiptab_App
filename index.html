@@ -3,14 +3,23 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <meta name="HandheldFriendly" content="True">
+        <meta name="MobileOptimized" content="320">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="cleartype" content="on">
+
+        <meta name="mobile-web-app-capable" content="yes">
+
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <meta name="apple-mobile-web-app-title" content="Kiptab">
+
         <title>Kiptab</title>
 
-        <link rel="stylesheet" href="http://fonts.googleapis.com/icon?family=Material+Icons">
+        <link rel="stylesheet" href="fonts/material-icons.css">
         <link rel="stylesheet" href="styles/material.min.css">
         <link rel="stylesheet" href="styles/main.css">
-
-        <link rel="stylesheet" href="styles/dialog-polyfill.css">
-        <script src="scripts/dialog-polyfill.js"></script>
     </head>
     <body>
         <div v-show="state.isFirstTime">
@@ -123,7 +132,7 @@
 
                         <div class="demo-card-square mdl-card mdl-shadow--2dp">
                             <div class="mdl-card__supporting-text">
-                                <p>Now that you've created a profile, you can finally start to keep tabs on your friends.</p>
+                                <p>Now that you've created a profile, you can finally start keeping tabs on your friends.</p>
                                 <p>To do that you just have to join a group. Either create one below or wait to be invited by your friends.</p>
 
                                 <div class="mdl-textfield mdl-js-textfield">
@@ -248,7 +257,7 @@
                     </div>
 
                     <select multiple v-model="tmpExpense.debtors">
-                        <option v-for="user in state.currentGroup.users" value="{{ user.email }}">{{ user.name }}</option>
+                        <option v-for="user in state.currentGroup.users" value="{{ user.email }}" selected>{{ user.name }}</option>
                     </select>
                 </form>
             </div>

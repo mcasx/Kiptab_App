@@ -1,11 +1,32 @@
-# Business Model
+# Kiptab
+
+Kiptab helps you and your friends keep track of expenses during vacations and other social settings
+by balancing debts automagically.
+
+## Problem
+
+## Solution
+
+## Business Model
 
 - Agências de viagens
 - Concertos (MEO Sudoeste etc)
 
-# Expansion
+## Expansion
 
 - Facebook login
 - Groups
 - Anyone can update in sync
 - Portagens
+
+## Development
+
+### Server
+
+```
+$ python server.py
+```
+
+### Client
+
+Compile the client on PhoneGap.
