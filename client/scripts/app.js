@@ -278,7 +278,7 @@
                   var self = this;
                   // Push first position
                   navigator.geolocation.getCurrentPosition(function(position){
-                      self.currentGroup.trips[self.currentGroup.trips.indexOf(trip)].lastPoint = position;
+                      self.state.currentGroup.trips[self.state.currentGroup.trips.indexOf(trip)].lastPoint = position;
                   }, function(err) {
                       console.warn('ERROR(' + err.code + '): ' + err.message);
                   }, options);
@@ -309,6 +309,11 @@
                   trip.currentState = 3;
 
                   this.addExpense(expense);
+              },
+
+              removeTrip: function (trip) {
+                  this.state.currentGroup.trips.$remove(trip);
+                  this.updateGroup();
               },
 
               // TODO: use altitude as well

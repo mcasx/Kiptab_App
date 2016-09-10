@@ -60,11 +60,10 @@
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <input class="mdl-textfield__input" type="text" v-model="state.currentUser.email">
                         <label class="mdl-textfield__label" for="name">Email...</label>
-
+                    </div>
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <input class="mdl-textfield__input" type="text" v-model="state.currentUser.name">
                         <label class="mdl-textfield__label" for="name">Name...</label>
-                    </div>
                     </div>
                 </div>
 
@@ -144,13 +143,13 @@
                                 <p>To do that you just have to join a group. Either create one below or wait to be invited by your friends.</p>
 
                                 <div class="mdl-textfield mdl-js-textfield">
-                                    <input class="mdl-textfield__input" type="text" id="group-name" v-model="state.currentGroup.name">
+                                    <input class="mdl-textfield__input" type="text" id="group-name" v-model="tmpGroup.name">
                                     <label class="mdl-textfield__label" for="group-name">Name...</label>
                                 </div>
                             </div>
 
                             <div class="mdl-card__actions mdl-card--border">
-                                <a @click="createGroup(state.currentGroup)" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+                                <a @click="createGroup(tmpGroup)" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
                                     Create Group
                                 </a>
                             </div>
@@ -198,6 +197,7 @@
                                     <a v-show="trip.currentState == 0 || trip.currentState == 2" @click="startTrip(trip)" class="trip-start-button mdl-list__item-secondary-action"><i class="material-icons">play_arrow</i></a>
                                     <a v-show="trip.currentState == 1" @click="pauseTrip(trip)" class="trip-pause-button mdl-list__item-secondary-action"><i class="material-icons">pause</i></a>
                                     <a v-show="trip.currentState != 3" @click="stopTrip(trip)" class="trip-stop-button mdl-list__item-secondary-action"><i class="material-icons">stop</i></a>
+                                    <a v-show="trip.currentState == 3" @click="removeTrip(trip)" class="trip-remove-button mdl-list__item-secondary-action"><i class="material-icons">delete</i></a>
                                 </span>
                             </li>
                         </ul>
