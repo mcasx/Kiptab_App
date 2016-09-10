@@ -152,8 +152,13 @@
              ******************************************************************/
 
             addExpense: function (expense) {
-                this.currentGroup.expenses.push({
-                    debtors: expense.debtors,
+                var debtors = [];
+                for(var i=0; i < expense.debtors.length; i++){
+                        debtors.push(this.getUserByEmail(expense.debtors[i]));
+                };
+
+                this.state.currentGroup.expenses.push({
+                    debtors: debtors,
                     creditor: this.state.currentUser,
                     value: expense.value || 0.00,
                     description: expense.description.trim() || ' '
