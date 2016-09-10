@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Divide n Travel</title>
+        <title>Kiptab</title>
 
         <link rel="stylesheet" href="http://fonts.googleapis.com/icon?family=Material+Icons">
         <link rel="stylesheet" href="styles/material.min.css">
@@ -13,42 +13,127 @@
         <script src="scripts/dialog-polyfill.js"></script>
     </head>
     <body>
-        <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header mdl-layout--fixed-tabs">
+        <section v-if="state.isFirstTime">
+            <style>
+                .welcome-card.mdl-card {
+                    width: 100% !important;
+                    height: 100vh;
+                }
+
+                .welcome-card > .mdl-card__title {
+                    color: #fff;
+                    height: 55vh;
+                    background: url('http://www.yourworldwithcreflo.com/wp-content/uploads/2015/01/bigstock-Group-Of-Friends-Having-Fun-To-58863764.jpg') center / cover;
+                }
+
+                .welcome-card > .mdl-card__supporting-text {
+                    height: 45vh;
+                }
+
+                .welcome-card > .mdl-card__actions {
+                    height: auto;
+                }
+            </style>
+
+            <div class="welcome-card mdl-card mdl-shadow--2dp">
+                <div class="mdl-card__title">
+                    <h2 class="mdl-card__title-text">Welcome</h2>
+                </div>
+
+                <div class="mdl-card__supporting-text">
+                    <p>
+                        Kiptab helps you and your friends keep track of expenses during vacations and other social settings
+                        by balancing debts automagically.
+                    </p>
+
+                    <p>Start by telling us more about you.</p>
+
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input class="mdl-textfield__input" type="text" v-model="state.currentUser.email">
+                        <label class="mdl-textfield__label" for="name">Email...</label>
+                    </div>
+
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input class="mdl-textfield__input" type="text" v-model="state.currentUser.name">
+                        <label class="mdl-textfield__label" for="name">Name...</label>
+                    </div>
+                </div>
+
+                <div class="mdl-card__actions mdl-card--border">
+                    <a @click="registerUser(state.currentUser)" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+                        Create Profile
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <div v-show="!state.isFirstTime" class="mdl-layout mdl-js-layout mdl-layout--fixed-header mdl-layout--fixed-tabs">
             <header class="mdl-layout__header">
                 <div class="mdl-layout__header-row">
-                    <span class="mdl-layout-title">Divide n Travel</span>
+                    <span class="mdl-layout-title">Kiptab</span>
+
+                    <div class="mdl-layout-spacer"></div>
+
+                    <nav class="mdl-navigation mdl-layout--large-screen-only">
+                        <a class="mdl-navigation__link" href=""><i class="material-icons">user</i> Edit Profile</a>
+                        <a class="mdl-navigation__link" href=""><i class="material-icons">settings</i> Link</a>
+                    </nav>
                 </div>
 
                 <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
-                    <a href="#tab-people" class="mdl-layout__tab is-active">People</a>
-                    <a href="#tab-expenses" class="mdl-layout__tab">Expenses</a>
+                    <a href="#tab-users" class="mdl-layout__tab is-active disabled">Friends</a>
+                    <a href="#tab-expenses" class="mdl-layout__tab disabled">Expenses</a>
                 </div>
             </header>
 
             <div class="mdl-layout__drawer">
-                <span class="mdl-layout-title">Divide n Travel</span>
+                <span class="mdl-layout-title">Kiptab</span>
+
+                <nav class="mdl-navigation">
+                    <a class="mdl-navigation__link" href=""><i class="material-icons">user</i> Edit Profile</a>
+                    <a class="mdl-navigation__link" href=""><i class="material-icons">settings</i> Link</a>
+                    <a class="mdl-navigation__link" href=""><i class="material-icons">settings</i> Link</a>
+                </nav>
+
+                <nav class="mdl-navigation">
+                    <a class="mdl-navigation__link" href=""><i class="material-icons">user</i> Edit Profile</a>
+                    <a class="mdl-navigation__link" href=""><i class="material-icons">settings</i> Link</a>
+                    <a class="mdl-navigation__link" href=""><i class="material-icons">settings</i> Link</a>
+                </nav>
             </div>
 
             <main class="mdl-layout__content">
-                <section id="tab-people" class="mdl-layout__tab-panel is-active">
-                    <div class="page-content">
+                <section id="tab-users" class="mdl-layout__tab-panel is-active">
+                    <div v-if="groupsOfUser(state.currentUser).length > 0" class="page-content">
                         <ul class="mdl-list">
-                            <li class="mdl-list__item mdl-list__item--three-line" v-for="person in people">
+                            <li class="mdl-list__item mdl-list__item--three-line" v-for="user in state.currentGroup.users">
                                 <span class="mdl-list__item-primary-content">
-                                    <i class="material-icons mdl-list__item-avatar">person</i>
-                                    <span>{{ person.name }}</span>
+                                    <i class="material-icons mdl-list__item-avatar">user</i>
+                                    <span>{{ user.name }}</span>
                                 </span>
 
                                 <span>
-                                    <a onclick="dom.registerDialog('#people-edit-dialog')" @click="editPerson(person)" class="people-edit-button" class="mdl-list__item-secondary-action"><i class="material-icons">edit</i></a>
-                                    <a @click="removePerson(person)" class="mdl-list__item-secondary-action"><i class="material-icons">delete</i></a>
+                                    <a onclick="dom.registerDialog('#users-edit-dialog')" @click="editUser(user)" class="users-edit-button" class="mdl-list__item-secondary-action"><i class="material-icons">edit</i></a>
+                                    <a @click="removeUser(user)" class="mdl-list__item-secondary-action"><i class="material-icons">delete</i></a>
                                 </span>
                             </li>
                         </ul>
 
-                        <button onclick="dom.registerDialog('#people-add-dialog')" id="people-add-button" class="mdl-button mdl-js-button mdl-button--fab mdl-button--bottom-right mdl-js-ripple-effect mdl-button--colored">
-                            <i class="material-icons">person_add</i>
+                        <button onclick="dom.registerDialog('#users-add-dialog')" id="users-add-button" class="mdl-button mdl-js-button mdl-button--fab mdl-button--bottom-right mdl-js-ripple-effect mdl-button--colored">
+                            <i class="material-icons">group_add</i>
                         </button>
+                    </div>
+
+                    <div v-else class="page-content">
+                        Now that you've created a profile, you can finally start to keep tabs on your friends. To do that you just have to join a group. Either create one below or wait to be invited by your friends.
+
+                        <form action="#">
+                            <div class="mdl-textfield mdl-js-textfield">
+                                <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="sample2">
+                                <label class="mdl-textfield__label" for="sample2">Name...</label>
+                                <span class="mdl-textfield__error">Input is not a number!</span>
+                            </div>
+                        </form>
                     </div>
                 </section>
 
@@ -79,41 +164,38 @@
             </main>
         </div>
 
-
-        
-
-        <dialog id="people-add-dialog" class="mdl-dialog">
-            <h4 class="mdl-dialog__title">Add Person</h4>
+        <dialog id="users-add-dialog" class="mdl-dialog">
+            <h4 class="mdl-dialog__title">Invite Friend to Group</h4>
 
             <div class="mdl-dialog__content">
                 <form action="#">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <input id="name" class="mdl-textfield__input" type="text" v-model="tmpPerson.name">
-                        <label class="mdl-textfield__label" for="name">Name...</label>
+                        <input class="mdl-textfield__input" type="text" v-model="tmpUser.email">
+                        <label class="mdl-textfield__label" for="name">Email...</label>
                     </div>
                 </form>
             </div>
 
             <div class="mdl-dialog__actions">
-                <button onclick="dom.closeDialog('#people-add-dialog')" type="button" class="mdl-button submit" @click="addPerson(tmpPerson)">Add</button>
-                <button onclick="dom.closeDialog('#people-add-dialog')" type="button" class="mdl-button close">Cancel</button>
+                <button onclick="dom.closeDialog('#users-add-dialog')" type="button" class="mdl-button submit" @click="addUser(tmpUser)">Add</button>
+                <button onclick="dom.closeDialog('#users-add-dialog')" type="button" class="mdl-button close">Cancel</button>
             </div>
         </dialog>
 
-        <dialog id="people-edit-dialog" class="mdl-dialog">
-            <h4 class="mdl-dialog__title">Edit Person</h4>
+        <dialog id="users-edit-dialog" class="mdl-dialog">
+            <h4 class="mdl-dialog__title">Edit User</h4>
 
             <div class="mdl-dialog__content">
                 <form action="#">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <input id="name" class="mdl-textfield__input" type="text" value="{{ tmpPerson.name }}" v-model="tmpPerson.name">
+                        <input id="name" class="mdl-textfield__input" type="text" value="{{ tmpUser.name }}" v-model="tmpUser.name">
                     </div>
                 </form>
             </div>
 
             <div class="mdl-dialog__actions">
-                <button onclick="dom.closeDialog('#people-edit-dialog')" type="button" class="mdl-button submit" @click="doneEditPerson(tmpPerson)">Edit</button>
-                <button onclick="dom.closeDialog('#people-edit-dialog')" type="button" class="mdl-button close" @click="cancelEditPerson(tmpPerson)">Cancel</button>
+                <button onclick="dom.closeDialog('#users-edit-dialog')" type="button" class="mdl-button submit" @click="doneEditUser(tmpUser)">Edit</button>
+                <button onclick="dom.closeDialog('#users-edit-dialog')" type="button" class="mdl-button close" @click="cancelEditUser(tmpUser)">Cancel</button>
             </div>
         </dialog>
 
@@ -134,8 +216,9 @@
                         <label class="mdl-textfield__label" for="description">Description...</label>
                     </div>
 
-                    <select multiple v-model="tmpIndebted">
-                        <option selected v-for="person in people" v-bind:value="$index">{{ person.name }}</option>
+                    <label class="mdl-textfield__label" for="description">Debtors...</label>
+                    <select multiple v-model="tmpExpense.debtors">
+                        <option selected v-for="user in users" value="{{ user.email }}">{{ user.name }}</option>
                     </select>
                 </form>
             </div>
@@ -169,8 +252,8 @@
                         <input id="description" class="mdl-textfield__input" type="text" value="{{ tmpExpense.description }}" v-model="tmpExpense.description">
                     </div>
 
-                    <select multiple v-model="tmpIndebted">
-                        <option selected v-for="person in people" v-bind:value="$index">{{ person.name }}</option>
+                    <select multiple v-model="state.currentUser.debtors">
+                        <option selected v-for="user in users" v-bind:value="$index">{{ user.name }}</option>
                     </select>
                 </form>
             </div>

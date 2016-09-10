@@ -2,30 +2,26 @@
 
     'use strict';
     exports.app = new Vue({
-        // the root element that will be compiled
         el: 'body',
 
-        // app initial state
         data: {
-            settings: storage.fetch('settings'),
-            groups: storage.fetch('groups'),
-            users: storage.fetch('users'),
-            trips: storage.fetch('trips'),
+            state: storage.fetch('state') || { isFirstTime: true, currentUser: {}, currentGroup: {} },
+            groups: storage.fetch('groups') || [],
+            users: storage.fetch('users') || [],
+            trips: storage.fetch('trips') || [],
 
             tmpExpense: { debtors: [], creditor: { email: '', name: ''}, value: 0, description: '' },
             tmpTrip: { description: '', distance: 0, consumption: 0, fuel: 0, lastPoint: null, isStopped: false, watchId: 0 },
-            tmpPerson: { email: '', name: ''},
+            tmpUser: { email: '', name: ''},
 
             cache: {},
         },
 
-        // watch expenses change for localStorage persistence
         watch: {
-
-            settings: {
+            state: {
                 deep: true,
                 handler: function(val) {
-                    storage.save('settings', val)
+                    storage.save('state', val)
                 }
             },
 
@@ -39,34 +35,51 @@
             users: {
                 deep: true,
                 handler: function(val) {
-                    storage.save('people', val)
+                    storage.save('users', val)
                 }
             }
         },
 
         methods: {
             resetState: function() {
-                this.tmpPerson = { email: '', name: '' };
+                this.tmpUser = { email: '', name: '' };
                 this.tmpExpense= { debtors: [], creditor: { email: '', name: ''}, value: 0, description: '' },
                 this.tmpTrip = { description: '', distance: 0,consumption: 0, fuel: 0, lastPoint: null, isStopped: false, watchId: 0 };
                 this.cache = {};
             },
 
             /*******************************************************************
-             * PEOPLE
+             * USERS
              ******************************************************************/
 
-            invitePerson: function(person) {
-                this.groups[this.groups.indexOf(this.settings.currentGroup)].users.push({
-                    email: person.email,
-                    name: person.name
+             registerUser: function(user) {
+                 this.state.isFirstTime = false;
+                 this.users.push(user);
+             },
+
+            inviteUser: function(user) {
+                this.groups[this.groups.indexOf(this.state.currentGroup)].users.push({
+                    email: user.email,
+                    name: user.name
                 });
 
                 this.resetState();
             },
 
-            removePerson: function (person) {
-                this.groups[this.groups.indexOf(this.settings.currentGroup)].users.$remove(person);
+            removeUser: function (user) {
+                this.groups[this.groups.indexOf(this.state.currentGroup)].users.$remove(user);
+            },
+
+            groupsOfUser: function (user) {
+                var groups = [];
+
+                this.groups.forEach(function(group) {
+                    if (arrayContainsObject(group.users, user)) {
+                        groups.push(group);
+                    }
+                });
+
+                return groups;
             },
 
             /*******************************************************************
@@ -75,8 +88,8 @@
 
             addExpense: function (expense) {
                 this.expenses.push({
-                    debtors: expense.debtors;
-                    creditor: this.settings.currentUser,
+                    debtors: expense.debtors,
+                    creditor: this.state.currentUser,
                     value: expense.value || 0.00,
                     description: expense.description.trim() || ' '
                 });
@@ -85,7 +98,7 @@
             },
 
             removeExpense: function (expense) {
-                this.groups[this.groups.indexOf(this.settings.currentGroup)].expenses.$remove(expense);
+                this.groups[this.groups.indexOf(this.state.currentGroup)].expenses.$remove(expense);
             },
 
             editExpense: function (expense) {
@@ -110,22 +123,22 @@
              * DEBTS
              ******************************************************************/
 
-             calculateDebt(user){
-                 var g = this.groups[this.groups.indexOf(this.settings.currentGroup)];
-                 var debt = 0;
-                 for(var i=0; i < g.expenses.length; i++){
-                    if( areObjectsEqual(g.expenses[i].creditor, user) && arrayContainsObject(g.expenses[i].debtors, this.settings.currentUser)){                                  //Incase of debt
-                        debt += g.expenses[i].value/g.expenses[i].debtors.length;
-                    }
-                    if( areObjectsEqual(g.expenses[i].creditor, this.settings.currentUser) && arrayContainsObject(g.expenses[i].debtors, user)){             //Incase of credit
-                        debt -= g.expenses[i].value/g.expenses[i].debtores.length;
-                    }
+             balanceBetween(user1, user2){
+                 var group = this.groups[this.groups.indexOf(this.state.currentGroup)];
+                 var balance = 0;
 
-                 }
+                 group.expenses.forEach(function(expense) {
+                     if(expense.creditor.email == user1.email && arrayContainsObject(expense.debtors, user2)) {
+                         balance += expense.value / expense.debtors.length;
+                     }
 
-                 return debt;
+                     if(expense.creditor.email == user2.email && arrayContainsObject(expense.debtors, user1)) {
+                         balance -= expense.value / expense.debtors.length;
+                     }
+                 });
+
+                 return balance;
              }
         }
     });
-
 })(window);

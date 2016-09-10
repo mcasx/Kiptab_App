@@ -1,4 +1,12 @@
 {
+    "users": [
+        { "email": "silverio@ua.pt", "name": "Silvério" },
+        { "email": "fabio.maia@ua.pt", "name": "Fábio Maia" },
+        { "email": "manuelxarez@ua.pt", "name": "Manuel Xarez" },
+        { "email": "ana@ua.pt", "name": "Ana" },
+        { "email": "joao@ua.pt", "name": "João" }
+    ],
+
     "groups": [
         {
             "name": "xarfab",
@@ -16,16 +24,6 @@
                         { "email": "manuelxarez@ua.pt", "name": "Manuel Xarez" }
                     ],
                     "creditor": { "email": "fabio.maia@ua.pt", "name": "Fábio Maia" }
-                },
-                {
-                    "value": 10,
-                    "description": "Snacks",
-                    "debtors": [
-                        { "email": "silverio@ua.pt", "name": "Silvério" },
-                        { "email": "fabio.maia@ua.pt", "name": "Fábio Maia" },
-                        { "email": "manuelxarez@ua.pt", "name": "Manuel Xarez" }
-                    ],
-                    "creditor": { "email": "manuelxarez@ua.pt", "name": "Manuel Xarez" }
                 }
             ]
         }
