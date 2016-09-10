@@ -123,11 +123,23 @@
                 return this.groupsOfUser(this.state.currentUser).length > 0;
             },
 
+            userExistsIn: function(array, user) {
+                var b = false;
+
+                array.forEach(function(item)) {
+                    if(item.email == user.email) {
+                        b = true;
+                    }
+                }
+
+                return b;
+            },
+
             groupsOfUser: function (user) {
                 var g = [];
 
                 this.groups.forEach(function(group) {
-                    if (helpers.arrayContainsObject(group.users, user)) {
+                    if (this.userExistsIn(group.users, user)) {
                         g.push(group);
                     }
                 });

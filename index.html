@@ -13,7 +13,7 @@
         <script src="scripts/dialog-polyfill.js"></script>
     </head>
     <body>
-        <section v-if="state.isFirstTime">
+        <div v-if="state.isFirstTime">
             <style>
                 .welcome-card.mdl-card {
                     width: 100% !important;
@@ -23,7 +23,7 @@
                 .welcome-card > .mdl-card__title {
                     color: #fff;
                     height: 55vh;
-                    background: url('http://www.yourworldwithcreflo.com/wp-content/uploads/2015/01/bigstock-Group-Of-Friends-Having-Fun-To-58863764.jpg') center / cover;
+                    background: url('images/welcome.jpg') center / cover;
                 }
 
                 .welcome-card > .mdl-card__supporting-text {
@@ -65,9 +65,9 @@
                     </a>
                 </div>
             </div>
-        </section>
+        </div>
 
-        <div v-show="!state.isFirstTime" class="mdl-layout mdl-js-layout mdl-layout--fixed-header mdl-layout--fixed-tabs">
+        <div v-else class="mdl-layout mdl-js-layout mdl-layout--fixed-header mdl-layout--fixed-tabs">
             <header class="mdl-layout__header">
                 <div class="mdl-layout__header-row">
                     <span class="mdl-layout-title">Kiptab</span>
