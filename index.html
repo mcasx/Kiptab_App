@@ -157,7 +157,7 @@
                                 <span class="mdl-list__item-primary-content">
                                     <i class="material-icons mdl-list__item-avatar">attach_money</i>
 
-                                    <span>${{ expense.value}}</span>
+                                    <span>${{ expense.value.toFixed(2) }}</span>
 
                                     <span class="mdl-list__item-text-body">{{ expense.description }}</span>
                                 </span>
@@ -181,7 +181,7 @@
                             <li class="mdl-list__item mdl-list__item--three-line" v-for="trip in trips">
                                 <span class="mdl-list__item-primary-content">
                                     <i class="material-icons mdl-list__item-avatar">directions_car</i>
-                                    <span>{{ trip.distance }} km</span>
+                                    <span>{{ trip.distance.toFixed(2) }} km</span>
 
                                     <span class="mdl-list__item-text-body">{{ trip.description }}</span>
                                 </span>
@@ -213,7 +213,7 @@
                             <tbody>
                                 <tr v-for="user in state.currentGroup.users"  v-if="!sameUser(user,state.currentUser)">
                                     <td class="mdl-data-table__cell--non-numeric">{{ user.name }}</td>
-                                    <td>${{ balanceBetween(user,state.currentUser) }}</td>
+                                    <td>${{ balanceBetween(user,state.currentUser).toFixed(2) }}</td>
                                 </tr>
                             </tbody>
                         </table>

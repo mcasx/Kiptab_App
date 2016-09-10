@@ -297,7 +297,7 @@
                       debtors: trip.debtors,
                       creditor: trip.creditor,
                       value: trip.distance * trip.consumption * trip.pricePerLiter,
-                      description: trip.description + ' (' + trip.distance + ' km)'
+                      description: trip.description + ' (' + trip.distance.toFixed(2) + ' km)'
                   };
                   trip.isStopped = true;
 
