@@ -8,9 +8,51 @@
             //Handled locally
             state: storage.fetch('state') || { isFirstTime: true, currentUser: { name: '', email: '' }, currentGroup: { name: '', expenses: [], users: [] } },
             //Handled @server
-            groups: storage.fetch('groups') || [],
+            groups: storage.fetch('groups') || [{
+                "name": "xarfab",
+                "users": [
+                    { "email": "silverio@ua.pt", "name": "Silvério" },
+                    { "email": "fabio.maia@ua.pt", "name": "Fábio Maia" },
+                    { "email": "manuelxarez@ua.pt", "name": "Manuel Xarez" }
+                ],
+                "expenses": [
+                    {
+                        "value": 12,
+                        "description": "Beef",
+                        "debtors": [
+                            { "email": "silverio@ua.pt", "name": "Silvério" },
+                            { "email": "manuelxarez@ua.pt", "name": "Manuel Xarez" }
+                        ],
+                        "creditor": { "email": "fabio.maia@ua.pt", "name": "Fábio Maia" }
+                    },
+
+                    {
+                        "value": 5,
+                        "description": "Fish",
+                        "debtors": [
+                            { "email": "manuelxarez@ua.pt", "name": "Manuel Xarez" }
+                        ],
+                        "creditor": { "email": "fabio.maia@ua.pt", "name": "Fábio Maia" }
+                    },
+
+                    {
+                        "value": 1.05,
+                        "description": "3 coffees",
+                        "debtors": [
+                            { "email": "manuelxarez@ua.pt", "name": "Manuel Xarez" },
+                            { "email": "silverio@ua.pt", "name": "Silvério" },
+                            { "email": "fabio.maia@ua.pt", "name": "Fábio Maia" }
+                        ],
+                        "creditor": { "email": "manuelxarez@ua.pt", "name": "Manuel Xarez" }
+
+                    }
+                ]
+            }],
             //Handled @server
-            users: storage.fetch('users') || [], 
+            users: storage.fetch('users') || [{ "email": "silverio@ua.pt", "name": "Silvério" },
+            { "email": "fabio.maia@ua.pt", "name": "Fábio Maia" },
+            { "email": "manuelxarez@ua.pt", "name": "Manuel Xarez" },
+            { "email": "johnconnor@terminator.pt", "name": "John Connor"}],
             //Handled locally
             trip: storage.fetch('trip') || {debtors: [], creditor: { email: '', name: ''}, distance: 0, description: '', pricePerLiter: 0, consumption: 0, lastPoint: null, currentState: 3, watchId: 0 },
 
@@ -237,13 +279,14 @@
              balanceBetween(user1, user2){
                  var group = this.state.currentGroup;
                  var balance = 0;
+                 var self = this;
 
                  group.expenses.forEach(function(expense) {
-                     if(expense.creditor.email == user1.email && helpers.arrayContainsObject(expense.debtors, user2)) {
+                     if(expense.creditor.email == user1.email && self.userExistsIn(expense.debtors, user2)) {
                          balance += expense.value / expense.debtors.length;
                      }
 
-                     if(expense.creditor.email == user2.email && helpers.arrayContainsObject(expense.debtors, user1)) {
+                     if(expense.creditor.email == user2.email && self.userExistsIn(expense.debtors, user1)) {
                          balance -= expense.value / expense.debtors.length;
                      }
                  });
