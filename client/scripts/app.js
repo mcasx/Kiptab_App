@@ -11,48 +11,49 @@
             groups: storage.fetch('groups') || [{
                 "name": "xarfab",
                 "users": [
-                    { "email": "silverio@ua.pt", "name": "Silvério" },
-                    { "email": "fabio.maia@ua.pt", "name": "Fábio Maia" },
-                    { "email": "manuelxarez@ua.pt", "name": "Manuel Xarez" }
+                    { "email": "joe@generic.com", "name": "Joe" },
+                    { "email": "mary@generic.com", "name": "Mary" },
+                    { "email": "robert@generic.com", "name": "Robert" }
                 ],
                 "expenses": [
                     {
                         "value": 12,
                         "description": "Beef",
                         "debtors": [
-                            { "email": "silverio@ua.pt", "name": "Silvério" },
-                            { "email": "manuelxarez@ua.pt", "name": "Manuel Xarez" }
+                            { "email": "joe@generic.com", "name": "Joe" },
+                            { "email": "robert@generic.com", "name": "Robert" }
                         ],
-                        "creditor": { "email": "fabio.maia@ua.pt", "name": "Fábio Maia" }
+                        "creditor": { "email": "mary@generic.com", "name": "Mary" }
                     },
 
                     {
                         "value": 5,
                         "description": "Fish",
                         "debtors": [
-                            { "email": "manuelxarez@ua.pt", "name": "Manuel Xarez" }
+                            { "email": "robert@generic.com", "name": "Robert" }
                         ],
-                        "creditor": { "email": "fabio.maia@ua.pt", "name": "Fábio Maia" }
+                        "creditor": { "email": "mary@generic.com", "name": "Mary" }
                     },
 
                     {
                         "value": 1.05,
                         "description": "3 coffees",
                         "debtors": [
-                            { "email": "manuelxarez@ua.pt", "name": "Manuel Xarez" },
-                            { "email": "silverio@ua.pt", "name": "Silvério" },
-                            { "email": "fabio.maia@ua.pt", "name": "Fábio Maia" }
+                            { "email": "robert@generic.com", "name": "Robert" },
+                            { "email": "joe@generic.com", "name": "Joe" },
+                            { "email": "mary@generic.com", "name": "Mary" }
                         ],
-                        "creditor": { "email": "manuelxarez@ua.pt", "name": "Manuel Xarez" }
+                        "creditor": { "email": "robert@generic.com", "name": "Robert" }
 
                     }
                 ]
             }],
             //Handled @server
-            users: storage.fetch('users') || [{ "email": "silverio@ua.pt", "name": "Silvério" },
-            { "email": "fabio.maia@ua.pt", "name": "Fábio Maia" },
-            { "email": "manuelxarez@ua.pt", "name": "Manuel Xarez" },
-            { "email": "johnconnor@terminator.pt", "name": "John Connor"}],
+            users: storage.fetch('users') || [{ "email": "mary@generic.com", "name": "Mary" },
+            { "email": "robert@generic.com", "name": "Robert" },
+            { "email": "susan@generic.com", "name": "Susan" },
+            { "email": "david@generic.com", "name": "David" },
+            { "email": "patricia@generic.com", "name": "Patricia" }],
             //Handled locally
             trip: storage.fetch('trip') || {debtors: [], creditor: { email: '', name: ''}, distance: 0, description: '', pricePerLiter: 0, consumption: 0, lastPoint: null, currentState: 3, watchId: 0 },
 
@@ -199,7 +200,6 @@
                         b = true;
                     }
                 });
-
                 return b;
             },
 
@@ -280,7 +280,6 @@
                  var group = this.state.currentGroup;
                  var balance = 0;
                  var self = this;
-
                  group.expenses.forEach(function(expense) {
                      if(expense.creditor.email == user1.email && self.userExistsIn(expense.debtors, user2)) {
                          balance += expense.value / expense.debtors.length;
