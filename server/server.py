@@ -91,9 +91,6 @@ def api_users_post():
         cur = db.execute('SELECT last_insert_rowid()')
         user_id = cur.fetchall()[0]['last_insert_rowid()']
 
-        print(group_id)
-        print(user_id)
-
         db.execute('INSERT INTO groups_users(group_id,user_id) VALUES (?,?)', [str(group_id), str(user_id)])
         db.commit()
 
@@ -112,7 +109,6 @@ def api_users_delete():
 
         cur = db.execute('SELECT last_insert_rowid()')
         user_id = cur.fetchall()[0]['last_insert_rowid()']
-        print(user_id)
 
         db.execute('DELETE FROM groups_users WHERE user_id=?', str(user_id))
         db.commit()
@@ -154,7 +150,6 @@ def api_expenses_get():
             'description': result['description'],
         })
 
-    print(expenses)
 
     res = { 'expenses': expenses }
     return jsonify(**res)
@@ -177,15 +172,11 @@ def api_expenses_post():
     records = cur.fetchall()
     expense_id = records[0]['last_insert_rowid()']
 
-    print(req['debtor_emails'])
 
     for debtor_email in req['debtor_emails']:
-        print(debtor_email)
         cur = db.execute('SELECT id FROM users WHERE email = ?', [str(debtor_email)])
 
         debtor_id = cur.fetchall()[0]['id']
-        print(debtor_id)
-        print(expense_id)
         db.execute('INSERT INTO expenses_debtors(expense_id, debtor_id) VALUES(?, ?)', [str(expense_id), str(debtor_id)])
         db.commit()
 
@@ -288,7 +279,6 @@ def db_get_groups():
             "expenses": db_get_group_expenses(str(i))
         })
 
-    print(groups)
     return groups
 
 @app.route('/api/groups', methods=['GET'])
