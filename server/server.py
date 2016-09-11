@@ -85,7 +85,9 @@ def api_users_post():
 
     if req['group_name'] != '':
         cur = db.execute('SELECT id FROM groups WHERE name = ?', [req['group_name']])
-        group_id = cur.fetchall()[0]['id']
+        records = cur.fetchall()[0]
+        print(records)
+        group_id = records['id']
 
         # try select by email if not working
         cur = db.execute('SELECT last_insert_rowid()')
