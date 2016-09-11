@@ -123,6 +123,9 @@
                 var u = this.getUserByEmail(email);
                 var b = true;
 
+                console.log('aaaaaaaa');
+                console.log(u);
+
                 if (u) {
                     this.state.currentGroup.users.push(u);
                     this.updateGroup();
