@@ -69,7 +69,6 @@ INSERT INTO expenses_debtors(expense_id, debtor_id) VALUES(1, 1);
 INSERT INTO expenses_debtors(expense_id, debtor_id) VALUES(1, 2);
 INSERT INTO expenses_debtors(expense_id, debtor_id) VALUES(1, 3);
 
-
 /*******************************************************************************
  * Groups
  ******************************************************************************/

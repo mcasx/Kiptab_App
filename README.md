@@ -42,7 +42,7 @@ $ git clone https://github.com/portosummerofcode/psc16-team37.git
 $ cd psc16-team37/
 ```
 
-- Make sure `DEBUG=True` is set in `app.config`
+- Make sure `DEBUG=False` is set in `app.config`
 
 - Run:
 
