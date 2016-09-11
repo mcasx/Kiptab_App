@@ -83,15 +83,18 @@ def api_users_post():
     db.execute('INSERT INTO users (email, name) VALUES (?, ?)', [req['email'], req['name']])
     db.commit()
 
-    if req['group_name']:
-        cur = db.execute('SELECT id FROM groups WHERE name = ?', req['group_name'])
+    if req['group_name'] != '':
+        cur = db.execute('SELECT id FROM groups WHERE name = ?', [req['group_name']])
         group_id = cur.fetchall()[0]['id']
 
         # try select by email if not working
         cur = db.execute('SELECT last_insert_rowid()')
-        user_id = cur.fetchall()[0]
+        user_id = cur.fetchall()[0]['last_insert_rowid()']
 
-        db.execute('INSERT INTO groups_users(group_id,user_id) VALUES (?,?)', [group_id, user_id])
+        print(group_id)
+        print(user_id)
+
+        db.execute('INSERT INTO groups_users(group_id,user_id) VALUES (?,?)', [str(group_id), str(user_id)])
         db.commit()
 
     res = {'message': 'POST request successful'}
@@ -104,19 +107,20 @@ def api_users_delete():
     db = db_open()
 
     if req['group_name']:
-        cur = db.execute('SELECT id FROM groups WHERE name = ?', req['group_name'])
+        cur = db.execute('SELECT id FROM groups WHERE name = ?', [req['group_name']])
         group_id = cur.fetchall()[0]['id']
 
         cur = db.execute('SELECT last_insert_rowid()')
-        user_id = cur.fetchall()[0]
+        user_id = cur.fetchall()[0]['last_insert_rowid()']
+        print(user_id)
 
-        db.execute('DELETE FROM groups_users WHERE user_id=?', user_id)
-        db.commit()
-    else:
-        db.execute('DELETE FROM users WHERE email=?', req['email'])
+        db.execute('DELETE FROM groups_users WHERE user_id=?', str(user_id))
         db.commit()
 
-    res = {'message': 'POST request successful'}
+    db.execute('DELETE FROM users WHERE email=?', [req['email']])
+    db.commit()
+
+    res = {'message': 'DELETE request successful'}
     return jsonify(**res)
 
 ################################################################################
@@ -125,13 +129,13 @@ def api_users_delete():
 
 def db_get_expense_creditor(expense_id):
     db = db_open()
-    cur = db.execute('SELECT email,name FROM users INNER JOIN expenses ON users.id = expenses.creditor_id WHERE expenses.id = ?', expense_id)
+    cur = db.execute('SELECT email,name FROM users INNER JOIN expenses ON users.id = expenses.creditor_id WHERE expenses.id = ?', [str(expense_id)])
     creditor = cur.fetchall()[0]
     return creditor
 
 def db_get_expense_debtors(expense_id):
     db = db_open()
-    cur = db.execute('SELECT u.name,u.email FROM users u WHERE u.id IN (SELECT ed.debtor_id FROM expenses_debtors ed WHERE ed.expense_id = ?)', expense_id)
+    cur = db.execute('SELECT u.name,u.email FROM users u WHERE u.id IN (SELECT ed.debtor_id FROM expenses_debtors ed WHERE ed.expense_id = ?)', [str(expense_id)])
     debtors = cur.fetchall()
     return debtors
 
@@ -150,6 +154,8 @@ def api_expenses_get():
             'description': result['description'],
         })
 
+    print(expenses)
+
     res = { 'expenses': expenses }
     return jsonify(**res)
 
@@ -158,23 +164,30 @@ def api_expenses_post():
     db = db_open()
     req = request.get_json(force=True)
 
-    cur = db.execute('SELECT id FROM groups WHERE name = ?', req['group_name'])
+    cur = db.execute('SELECT id FROM groups WHERE name = ?', [req['group_name']])
     group_id = cur.fetchall()[0]['id']
 
-    cur = db.execute('SELECT id FROM users WHERE email = ?', req['creditor_email'])
+    cur = db.execute('SELECT id FROM users WHERE email = ?', [req['creditor_email']])
     creditor_id = cur.fetchall()[0]['id']
 
-    db.execute('INSERT INTO expenses(group_id, value, description, creditor_id) VALUES(?, ?, ?, ?)', [group_id, req['value'], req['description'], creditor_id])
+    db.execute('INSERT INTO expenses(group_id, value, description, creditor_id) VALUES(?, ?, ?, ?)', [str(group_id), req['value'], req['description'], str(creditor_id)])
     db.commit()
 
     cur = db.execute('SELECT last_insert_rowid()')
     records = cur.fetchall()
-    expense_id = records[0]
+    expense_id = records[0]['last_insert_rowid()']
+
+    print(req['debtor_emails'])
 
     for debtor_email in req['debtor_emails']:
-        cur = db.execute('SELECT id FROM users WHERE email = ?', debtor_email)
+        print(debtor_email)
+        cur = db.execute('SELECT id FROM users WHERE email = ?', [str(debtor_email)])
+
         debtor_id = cur.fetchall()[0]['id']
+        print(debtor_id)
+        print(expense_id)
         db.execute('INSERT INTO expenses_debtors(expense_id, debtor_id) VALUES(?, ?)', [str(expense_id), str(debtor_id)])
+        db.commit()
 
     res = {'message': 'POST request successful'}
     return jsonify(**res)
@@ -184,22 +197,23 @@ def api_expenses_put():
     db = db_open()
     req = request.get_json(force=True)
 
-    cur = db.execute('SELECT id FROM groups WHERE name = ?', req['group_name'])
+    cur = db.execute('SELECT id FROM groups WHERE name = ?', [req['group_name']])
     group_id = cur.fetchall()[0]['id']
 
-    cur = db.execute('SELECT id FROM expenses WHERE description = ? AND group_id=?', [req['old_description'], group_id])
+    cur = db.execute('SELECT id FROM expenses WHERE description = ? AND group_id=?', [req['old_description'], [str(group_id)]])
     expense_id = cur.fetchall()[0]['id']
 
-    cur = db.execute('SELECT id FROM users WHERE email = ?', req['creditor_email'])
+    cur = db.execute('SELECT id FROM users WHERE email = ?', [req['creditor_email']])
     creditor_id = cur.fetchall()[0]['id']
 
-    db.execute('UPDATE expenses SET value=?, description=?, creditor_id=? WHERE id=?', [req['value'], req['description'], creditor_id, expense_id])
+    db.execute('UPDATE expenses SET value=?, description=?, creditor_id=? WHERE id=?', [req['value'], req['description'], str(creditor_id), str(expense_id)])
     db.commit()
 
     for debtor_email in req['debtor_emails']:
-        cur = db.execute('SELECT id FROM users WHERE email = ?', debtor_email)
-        debtor_id = cur.fetchall()[0]['id']
+        cur = db.execute('SELECT id FROM users WHERE email = ?', [str(debtor_email)])
+        debtor_id = cur.fetchall()[0]
         db.execute('INSERT INTO expenses_debtors(expense_id, debtor_id) VALUES(?, ?)', [str(expense_id), str(debtor_id)])
+        db.commit()
 
     res = {'message': 'PUT request successful'}
     return jsonify(**res)
@@ -209,19 +223,19 @@ def api_expenses_delete():
     db = db_open()
     req = request.get_json(force=True)
 
-    cur = db.execute('SELECT id FROM groups WHERE name=?', req['group_name'])
+    cur = db.execute('SELECT id FROM groups WHERE name=?', [req['group_name']])
     group_id = cur.fetchall()[0]['id']
 
-    cur = db.execute('SELECT id FROM expenses WHERE description=? AND group_id=?', [req['old_description'], group_id])
+    cur = db.execute('SELECT id FROM expenses WHERE description=? AND group_id=?', [req['description'], str(group_id)])
     expense_id = cur.fetchall()[0]['id']
 
-    cur = db.execute('SELECT id FROM users WHERE email=?', req['creditor_email'])
-    creditor_id = cur.fetchall()[0]['id']
+    # cur = db.execute('SELECT id FROM users WHERE email=?', [req['creditor_email']])
+    # creditor_id = cur.fetchall()[0]['id']
 
-    db.execute('DELETE FROM expenses WHERE id=?', expense_id)
+    db.execute('DELETE FROM expenses WHERE id=?', [str(expense_id)])
     db.commit()
 
-    db.execute('DELETE FROM expenses_debtors WHERE expense_id=?', expense_id)
+    db.execute('DELETE FROM expenses_debtors WHERE expense_id=?', [str(expense_id)])
     db.commit()
 
     res = {'message': 'DELETE request successful'}
@@ -273,6 +287,8 @@ def db_get_groups():
             "users": db_get_group_users(str(i)),
             "expenses": db_get_group_expenses(str(i))
         })
+
+    print(groups)
     return groups
 
 @app.route('/api/groups', methods=['GET'])

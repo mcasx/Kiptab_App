@@ -7,53 +7,8 @@
         data: {
             //Handled locally
             state: storage.fetch('state') || { isFirstTime: true, currentUser: { name: '', email: '' }, currentGroup: { name: '', expenses: [], users: [] } },
-            //Handled @server
-            groups: storage.fetch('groups') || [{
-                "name": "xarfab",
-                "users": [
-                    { "email": "joe@generic.com", "name": "Joe" },
-                    { "email": "mary@generic.com", "name": "Mary" },
-                    { "email": "robert@generic.com", "name": "Robert" }
-                ],
-                "expenses": [
-                    {
-                        "value": 12,
-                        "description": "Beef",
-                        "debtors": [
-                            { "email": "joe@generic.com", "name": "Joe" },
-                            { "email": "robert@generic.com", "name": "Robert" }
-                        ],
-                        "creditor": { "email": "mary@generic.com", "name": "Mary" }
-                    },
-
-                    {
-                        "value": 5,
-                        "description": "Fish",
-                        "debtors": [
-                            { "email": "robert@generic.com", "name": "Robert" }
-                        ],
-                        "creditor": { "email": "mary@generic.com", "name": "Mary" }
-                    },
-
-                    {
-                        "value": 1.05,
-                        "description": "3 coffees",
-                        "debtors": [
-                            { "email": "robert@generic.com", "name": "Robert" },
-                            { "email": "joe@generic.com", "name": "Joe" },
-                            { "email": "mary@generic.com", "name": "Mary" }
-                        ],
-                        "creditor": { "email": "robert@generic.com", "name": "Robert" }
-
-                    }
-                ]
-            }],
-            //Handled @server
-            users: storage.fetch('users') || [{ "email": "mary@generic.com", "name": "Mary" },
-            { "email": "robert@generic.com", "name": "Robert" },
-            { "email": "susan@generic.com", "name": "Susan" },
-            { "email": "david@generic.com", "name": "David" },
-            { "email": "patricia@generic.com", "name": "Patricia" }],
+            groups: [],
+            users: [],
             //Handled locally
             trip: storage.fetch('trip') || {debtors: [], creditor: { email: '', name: ''}, distance: 0, description: '', pricePerLiter: 0, consumption: 0, lastPoint: null, currentState: 3, watchId: 0 },
 
@@ -65,25 +20,23 @@
             cache: {},
         },
 
+        ready: function() {
+            var self = this;
+
+            $.get('/api/users', function (data) {
+                self.users = data.users;
+            });
+
+            $.get('/api/groups', function (data) {
+                self.groups = data.groups;
+            });
+        },
+
         watch: {
             state: {
                 deep: true,
                 handler: function(val) {
                     storage.save('state', val)
-                }
-            },
-
-            groups: {
-                deep: true,
-                handler: function(val) {
-                    storage.save('groups', val)
-                }
-            },
-
-            users: {
-                deep: true,
-                handler: function(val) {
-                    storage.save('users', val)
                 }
             },
 
@@ -152,6 +105,18 @@
             registerUser: function(user) {
                 this.state.isFirstTime = false;
                 this.users.push(user);
+
+                user.group_name = '';
+                console.log(user);
+                $.ajax({
+                    type: "POST",
+                    url: "/api/users",
+                    data: JSON.stringify(user),
+                    success: function(res) {
+                        console.log(res);
+                    },
+                    dataType: 'json'
+                });
             },
 
             inviteUser: function(email) {
@@ -161,6 +126,18 @@
                 if (u) {
                     this.state.currentGroup.users.push(u);
                     this.updateGroup();
+
+                    u.group_name = this.state.currentGroup.name;
+                    console.log(u);
+                    $.ajax({
+                        type: "POST",
+                        url: "/api/users",
+                        data: JSON.stringify(u),
+                        success: function(res) {
+                            console.log(res);
+                        },
+                        dataType: 'json'
+                    });
                 } else {
                     b = false;
                 }
@@ -173,6 +150,18 @@
             removeUser: function (user) {
                 this.state.currentGroup.users.$remove(user);
                 this.updateGroup();
+
+                user.group_name = this.state.currentGroup.name;
+                console.log(user);
+                $.ajax({
+                    type: "DELETE",
+                    url: "/api/users",
+                    data: JSON.stringify(user),
+                    success: function(res) {
+                        console.log(res);
+                    },
+                    dataType: 'json'
+                });
             },
 
             createGroup: function(group) {
@@ -181,6 +170,29 @@
                 this.state.currentGroup = group;
                 this.updateGroup();
                 this.resetState();
+
+                console.log(group);
+                $.ajax({
+                    type: "POST",
+                    url: "/api/groups",
+                    data: JSON.stringify(group),
+                    success: function(res) {
+                        console.log(res);
+                    },
+                    dataType: 'json'
+                });
+
+                this.state.currentUser.group_name = this.state.currentGroup.name;
+                console.log(this.state.currentUser);
+                $.ajax({
+                    type: "POST",
+                    url: "/api/users",
+                    data: JSON.stringify(this.state.currentUser),
+                    success: function(res) {
+                        console.log(res);
+                    },
+                    dataType: 'json'
+                });
             },
 
             changeGroup: function(group) {
@@ -238,12 +250,38 @@
 
                 this.updateGroup();
 
+                expense.group_name = this.state.currentGroup.name;
+                expense.creditor_email = this.state.currentUser.email;
+                expense.debtor_emails = expense.debtors;
+                console.log(expense);
+                $.ajax({
+                    type: "POST",
+                    url: "/api/expenses",
+                    data: JSON.stringify(expense),
+                    success: function(res) {
+                        console.log(res);
+                    },
+                    dataType: 'json'
+                });
+
                 this.resetState();
             },
 
             removeExpense: function (expense) {
                 this.state.currentGroup.expenses.$remove(expense);
                 this.updateGroup();
+
+                expense.group_name = this.state.currentGroup.name;
+                console.log(expense);
+                $.ajax({
+                    type: "DELETE",
+                    url: "/api/expenses",
+                    data: JSON.stringify(expense),
+                    success: function(res) {
+                        console.log(res);
+                    },
+                    dataType: 'json'
+                });
             },
 
             editExpense: function (expense) {
