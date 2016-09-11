@@ -19,13 +19,20 @@ app.config.update(
 
 def db_connect():
     """Connects to the specific database."""
+    def dict_factory(cursor, row):
+        d = {}
+        for idx, col in enumerate(cursor.description):
+            d[col[0]] = row[idx]
+        return d
+
     rv = sqlite3.connect(app.config['DATABASE'])
-    rv.row_factory = sqlite3.Row
+    rv.row_factory = dict_factory
+
     return rv
 
 def db_init():
     """Initializes the database."""
-    db = db_get()
+    db = db_open()
     with app.open_resource('schema.sql', mode='r') as f:
         db.cursor().executescript(f.read())
     db.commit()
@@ -36,7 +43,7 @@ def initdb():
     print('Initialized the database.')
 
 
-def db_get():
+def db_open():
     """Opens a new database connection if there is none yet for the
     current application context.
     """
@@ -57,42 +64,141 @@ def api_index():
     return jsonify(**entries)
 
 ################################################################################
-# API Users
+# API: Users
 ################################################################################
 
 @app.route('/api/users', methods=['GET'])
 def api_users_get():
-    db = db_get()
+    db = db_open()
     cur = db.execute('select email, name from users order by id asc')
     records = cur.fetchall()
-    users = [dict(record) for record in records]
-    print(users)
-    res = { 'users': users }
+    res = { 'users': records }
     return jsonify(**res)
 
 @app.route('/api/users', methods=['POST'])
 def api_users_post():
-    db = db_get()
+    db = db_open()
     req = request.get_json(force=True)
-    db.execute('insert into users (email, name) values (?, ?)', [req['email'], req['name']])
+    db.execute('INSERT INTO users (email, name) VALUES (?, ?)', [req['email'], req['name']])
     db.commit()
-    return jsonify(**req)
+    res = {'message': 'POST request successful'}
+    return jsonify(**res)
 
 ################################################################################
-# API Groups
+# API: Expenses
 ################################################################################
+
+def db_get_expense_creditor(expense_id):
+    db = db_open()
+    cur = db.execute('SELECT email,name FROM users INNER JOIN expenses ON users.id = expenses.creditor_id WHERE expenses.id = ?', expense_id)
+    creditor = cur.fetchall()[0]
+    return creditor
+
+def db_get_expense_debtors(expense_id):
+    db = db_open()
+    cur = db.execute('SELECT u.name,u.email FROM users u WHERE u.id IN (SELECT ed.debtor_id FROM expenses_debtors ed WHERE ed.expense_id = ?)', expense_id)
+    debtors = cur.fetchall()
+    return debtors
+
+@app.route('/api/expenses', methods=['GET'])
+def api_expenses_get():
+    db = db_open()
+    cur = db.execute('SELECT * FROM expenses ORDER BY id ASC')
+    results = cur.fetchall()
+
+    expenses = []
+    for result in results:
+        expenses.append({
+            'creditor': db_get_expense_creditor(str(result['creditor_id'])),
+            'debtors': db_get_expense_debtors(str(result['id'])),
+            'value': result['value'],
+            'description': result['description'],
+        })
+
+    res = { 'expenses': expenses }
+    return jsonify(**res)
+
+
+
+@app.route('/api/expenses', methods=['POST'])
+def api_expenses_post():
+    db = db_open()
+    req = request.get_json(force=True)
+
+    db.execute('INSERT INTO expenses(group_id, value, description, creditor_id) VALUES(?, ?, ?, ?)', [req['group_id'], req['value'], req['description'], req['creditor_id']])
+    db.commit()
+
+    cur = db.execute('SELECT last_insert_rowid()')
+    records = cur.fetchall()
+    expense_id = records[0]
+
+    for debtor_id in req['debtor_ids']:
+        db.execute('INSERT INTO expenses_debtors(expense_id, debtor_id) VALUES(?, ?)', [str(expense_id), str(debtor_id)])
+
+    res = {'message': 'POST request successful'}
+    return jsonify(**res)
+
+################################################################################
+# API: Groups
+################################################################################
+
+def db_get_group_expenses(group_id):
+    db = db_open()
+    cur = db.execute('SELECT * FROM expenses WHERE group_id = ?', group_id)
+    results = cur.fetchall()
+
+    expenses = []
+    for result in results:
+        expenses.append({
+            'creditor': db_get_expense_creditor(str(result['creditor_id'])),
+            'debtors': db_get_expense_debtors(str(result['id'])),
+            'value': result['value'],
+            'description': result['description'],
+        })
+
+    return expenses
+
+def db_get_group_users(group_id):
+    db = db_open()
+    cur = db.execute('SELECT u.name,u.email FROM users u WHERE u.id IN (SELECT gu.user_id FROM groups_users gu WHERE gu.group_id = ?)', group_id)
+    records = cur.fetchall()
+    return records
+
+def db_get_group_name(group_id):
+    db = db_open()
+    cur = db.execute('SELECT name FROM groups WHERE id = ?', group_id)
+    records = cur.fetchall()
+    return records[0]['name']
+
+def db_get_groups_size():
+    db = db_open()
+    cur = db.execute('SELECT COUNT(*) FROM groups')
+    records = cur.fetchall()
+    return records[0]['COUNT(*)']
 
 def db_get_groups():
-    db = db_get()
-    cur = db.execute('select name from groups order by id asc')
-    records = cur.fetchall()
-    groups = [dict(record) for record in records]
+    groups = []
+    for i in range(1, db_get_groups_size()+1):
+        groups.append({
+            "name": db_get_group_name(str(i)),
+            "users": db_get_group_users(str(i)),
+            "expenses": db_get_group_expenses(str(i))
+        })
     return groups
 
 @app.route('/api/groups', methods=['GET'])
 def api_groups_get():
     groups = db_get_groups()
     res = { 'groups': groups }
+    return jsonify(**res)
+
+@app.route('/api/groups', methods=['POST'])
+def api_groups_post():
+    db = db_open()
+    req = request.get_json(force=True)
+    db.execute('INSERT INTO groups (name) VALUES (?)', [req['name']])
+    db.commit()
+    res = {'message': 'POST request successful'}
     return jsonify(**res)
 
 ################################################################################
