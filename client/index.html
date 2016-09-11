@@ -180,7 +180,7 @@
                                 </span>
 
                                 <span>
-                                    <a v-show="expense.creditor.email == state.currentUser.email" onclick="dom.registerDialog('#expenses-edit-dialog')" class="expenses-edit-button" @click="editExpense(expense)" class="mdl-list__item-secondary-action"><i class="material-icons">edit</i></a>
+                                    <!--<a v-show="expense.creditor.email == state.currentUser.email" onclick="dom.registerDialog('#expenses-edit-dialog')" class="expenses-edit-button" @click="editExpense(expense)" class="mdl-list__item-secondary-action"><i class="material-icons">edit</i></a>-->
                                     <a @click="removeExpense(expense)" class="mdl-list__item-secondary-action"><i class="material-icons">delete</i></a>
                                 </span>
                             </li>
