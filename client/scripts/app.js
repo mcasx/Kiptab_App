@@ -24,8 +24,10 @@
             var self = this;
             console.log('SYNCING');
 
+            console.log(self.users.length);
             $.get('/api/users', function (data) {
                 self.users = data.users;
+                console.log(self.users.length);
             });
 
             $.get('/api/groups', function (data) {
