@@ -25,13 +25,18 @@
             console.log('SYNCING');
 
             console.log(self.users.length);
+
             $.get('/api/users', function (data) {
                 self.users = data.users;
+                console.log('synced users');
                 console.log(self.users.length);
             });
 
+            console.log(self.users.length);
             $.get('/api/groups', function (data) {
+                console.log('synced groups');
                 self.groups = data.groups;
+                console.log(self.groups.length);
             });
         },
 
