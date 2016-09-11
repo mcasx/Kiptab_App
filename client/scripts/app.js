@@ -22,6 +22,7 @@
 
         ready: function() {
             var self = this;
+            console.log('SYNCING');
 
             $.get('/api/users', function (data) {
                 self.users = data.users;
