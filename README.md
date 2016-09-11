@@ -5,7 +5,11 @@ by balancing debts automagically.
 
 ## Problem
 
+
+
 ## Solution
+
+
 
 ## Business Model
 
@@ -15,12 +19,11 @@ by balancing debts automagically.
 ## Expansion
 
 - Facebook login
-- Groups
-- Anyone can update in sync
 - Portagens
+- Email/SMS reminders
+- PayPal/Stripe integration
 
 ## Development
-
 
 ### Server
 
