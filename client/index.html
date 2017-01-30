@@ -91,15 +91,13 @@
             <div class="mdl-layout__drawer">
                 <span class="mdl-layout-title">Groups</span>
                 <nav class="mdl-navigation">
-                    <table class="mdl-data-table mdl-js-data-table">
-                        <tbody>
-                            <tr @click="changeGroup(group)" v-for="group in groupsOfUser(state.currentUser)">
-                                <td class="mdl-data-table__cell--non-numeric">{{ group.name }}</td>
-                                <td>{{ group.users.length }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <button onclick="dom.registerDialog('#group-add-dialog')" id="group-add-button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">
+                    <a class="mdl-navigation__link" v-for="group in groupsOfUser(state.currentUser)">
+                        <i class="material-icons">group</i>
+                        <span>{{ group.name }}</span>
+                        <!-- <span class="mdl-badge" data-badge="{{ group.users.length }}">{{ group.name }}</span> -->
+                    </a>
+
+                    <button onclick="dom.registerDialog('#group-add-dialog')" id="group-add-button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" style="margin: 0 20px">
                         Add Group
                     </button>
                 </nav>
@@ -205,8 +203,8 @@
                             <tbody>
                                 <tr v-for="user in state.currentGroup.users"  v-if="!sameUser(user,state.currentUser)">
                                     <td class="mdl-data-table__cell--non-numeric">{{ user.name }}</td>
-                                    <td style="color:#FF0000" v-if="balanceBetween(state.currentUser,user) < 0">{{ balanceBetween(state.currentUser,user).toFixed(2) }}$</td>
-                                    <td style="color:#008516" v-else>{{ balanceBetween(state.currentUser,user).toFixed(2) }}$</td>
+                                    <td style="color:#FF0000" v-if="balanceBetween(state.currentUser,user) < 0">${{ balanceBetween(state.currentUser,user).toFixed(2) }}</td>
+                                    <td style="color:#008516" v-else>${{ balanceBetween(state.currentUser,user).toFixed(2) }}</td>
                                 </tr>
                             </tbody>
                         </table>

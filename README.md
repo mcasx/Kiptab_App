@@ -1,50 +1,52 @@
 # Kiptab
 
-Kiptab helps you and your friends keep track of expenses during vacations and other social settings
-by balancing debts automatically.
+![Kiptab](http://i.imgur.com/1yqIrVD.png)
 
-## Problem
+Developed at Porto Summer of Code 2016, a 48h hackathon set in Porto, Kiptab is an app that helps you and your friends keep track of expenses during vacations and other social settings by balancing debts automatically.
 
-Have you ever had trouble keeping tabs on who owes you that one coffee or if you paid that one meal for John or Mary? Or even worse, had a fun vacation with some friends but had trouble remembering who you owe for that great meal you ate? But do you really have to pay? After all they haven't paid for the fuel you used on that long ride.
-
-## Solution
-
-Kiptab keeps track of who owes who in your group of friends. Just add expenses when you pay for them and check the balance between you and all your friends whenever you want!
-
-## Business Model
-
-- Agências de viagens
-- Concertos (MEO Sudoeste etc)
-
-## Expansion
-
-- Facebook login
-- Portagens
-- Email/SMS reminders
-- PayPal/Stripe integration
-
-## Development
+## Technologies
 
 ### Server
 
-Python, SQLite, Flask
+- Python
+- Flask
+- SQLite
 
 ### Client
 
-HTML, CSS, JavaScript, Vue.js, Material Design Lite
+- HTML, CSS, JavaScript
+- Vue.js
+- Material Design Lite
+
+## Development
+
+## Dependencies
+
+```
+$ cd server
+$ pip install -r requirements.txt
+```
+
+## Run
+
+```
+$ cd server
+$ chmod +x start.sh
+$ ./start.sh
+```
 
 ## Deployment
 
-- Run:
+1. Clone the repository:
 
 ```
-$ git clone https://github.com/portosummerofcode/psc16-team37.git
-$ cd psc16-team37/
+$ git clone https://github.com/faviouz/kiptab.git
+$ cd kiptab/
 ```
 
-- Make sure `DEBUG=False` is set in `app.config`
+2. Make sure `DEBUG=False` is set in `app.config`.
 
-- Run:
+3. Run the application.
 
 ```
 $ chmod +x start.sh
